@@ -1,4 +1,3 @@
-import FormalConjecturesForMathlib.Combinatorics.Additive.VCDim
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Fintype.Powerset
@@ -8,9 +7,23 @@ import Mathlib.Tactic
 # Finite additive arrays and convex labels
 
 These definitions implement the array-counting setup in section 1 of the
-VCₙ argument in `FCreportv1.html`, exploration 30. The VCₙ predicate itself
-is imported from the pinned Formal Conjectures library, not redefined here.
+VCₙ argument in `FCreportv1.html`, exploration 30. The additive VCₙ predicate
+is defined here with the same statement as `HasAddVCNDimAtMost` in Formal Conjectures
+(`FormalConjecturesForMathlib/Combinatorics/Additive/VCDim.lean`).
 -/
+
+section VCNDim
+
+variable {G : Type*} [AddCommGroup G]
+
+/-- A set `A` in an abelian group has VCₙ dimension at most `d` iff one cannot find two sequences
+`x` and `y` of elements indexed by `[n] × [d + 1]` and `2 ^ [d + 1]ⁿ` respectively such that
+`y s + ∑ k, x (k, i k) ∈ A ↔ i ∈ s` for all `i ∈ [d + 1]ⁿ`, `s ⊆ [d + 1]ⁿ`. -/
+def HasAddVCNDimAtMost (A : Set G) (n d : ℕ) : Prop :=
+  ∀ (x : Fin n → Fin (d + 1) → G) (y : Set (Fin n → Fin (d + 1)) → G),
+    ¬ ∀ i s, y s + ∑ k, x k (i k) ∈ A ↔ i ∈ s
+
+end VCNDim
 
 namespace VCDimConvexBound
 

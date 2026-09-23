@@ -6,7 +6,7 @@ import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "lean"
+SOURCE = ROOT
 TARGET = ROOT / "lean4web" / "VCDimConvexBoundLean4Web.lean"
 ENTRY = "VCDimConvexBound.FCStatement"
 
@@ -74,21 +74,13 @@ set_option maxHeartbeats 800000
 /-!
 # A standalone Lean4Web proof of the convex additive VC_n bound
 
-This file is generated from the files in `../lean/VCDimConvexBound/`.
-It uses mathlib only.  The definition below is the additive VC_n definition
-used by the pinned Formal Conjectures target.  The repository license and
-README record the source revision and attribution.
+This file is generated from the files in `../VCDimConvexBound/`.
+It uses mathlib only.  The additive VC_n definition comes from the source module
+`VCDimConvexBound.Basic`.  The repository license and README record the source
+revision and attribution.
 -/
 
 open scoped BigOperators
-
-variable {G : Type*} [AddCommGroup G]
-
-/-- A set has additive VC_n dimension at most `d` when no additive family
-indexed by `Fin n -> Fin (d + 1)` realizes every subset. -/
-def HasAddVCNDimAtMost (A : Set G) (n d : ℕ) : Prop :=
-  ∀ (x : Fin n → Fin (d + 1) → G) (y : Set (Fin n → Fin (d + 1)) → G),
-    ¬ ∀ i s, y s + ∑ k, x k (i k) ∈ A ↔ i ∈ s
 '''
 
 parts = [preamble]
