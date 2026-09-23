@@ -19,6 +19,12 @@ theorem vcdim_convex_uniform_bound_solved (n : ℕ) (hn : 1 ≤ n) :
 
 The witness is `d = 2^(8 * (n + 2)^n) - 1`.
 
+For `n = 2` it proves the much smaller bound
+
+```text
+VC_2(C) ≤ 123    for every convex C ⊆ ℝ³.
+```
+
 The upstream Formal Conjectures declaration is still marked `research open` at the pinned
 revision.
 
@@ -45,6 +51,13 @@ theorem VCDimConvex.explicit_bound
 ```
 
 Here `VCDimConvex.bound n` is defined as `2^(8 * (n + 2)^n) - 1`.
+
+The three-dimensional bound is:
+
+```lean
+theorem VCDimConvexFC.vcdim_convex_two_le_123 :
+    ∀ C : Set (Fin 3 → ℝ), Convex ℝ C → HasAddVCNDimAtMost C 2 123
+```
 
 The project is pinned to mathlib `v4.33.1` and Lean `v4.33.1`.  Exact dependency revisions are
 recorded in `lake-manifest.json`.
@@ -81,6 +94,25 @@ fits the numerical budget above.
 No general Warren theorem, hypersurface-component theorem, Sard theorem, or nondegeneracy of
 critical points is assumed by the final theorem.
 
+### The bound VC_2 ≤ 123
+
+In `ℝ³` the Sanyal route is replaced by a direct bound on convexly independent index sets
+(`VCDimConvex/ConvexIndependentBound.lean`).  Slice an `m × m × m` array into the layers
+`i₀ = j`.  If two layers share three tails, the six corresponding points `b_k`, `b_k + u` would all
+be strictly exposed by functionals annihilating the layer offset `w`.  This is impossible, because
+such functionals form a line in the dual of `ℝ³`.  Two Cauchy–Schwarz counts then show that two
+layers share at most `mu m` tails, and that a convexly independent set has at most `R m`
+elements, where
+
+```text
+mu m = ⌊(m + √(m² + 8m²(m-1)))/2⌋,   R m = ⌊(m² + √(m⁴ + 4m³(m-1)·mu m))/2⌋.
+```
+
+At `m = 124`, `R 124 = 693785`.  A weighted binomial count (weights `4` and `7`) bounds the number
+of such subsets, and the direct sign-pattern count bounds the rest.  The resulting inequality
+between two numbers of about 3.6 million bits is checked by kernel arithmetic
+(`VCDimConvex/Bound123.lean`).
+
 ## Status boundary
 
 What this repository proves:
@@ -88,6 +120,8 @@ What this repository proves:
 ```text
 For every n ≥ 1, there is one finite d(n) that works for every convex
 C ⊆ ℝ^(n+1), with d(n) = 2^(8(n+2)^n) - 1.
+
+Every convex C ⊆ ℝ^3 has additive VC_2 dimension at most 123.
 ```
 
 What it does not prove:
@@ -99,7 +133,7 @@ Every convex C ⊆ ℝ^(n+1) has additive VC_n dimension at most 3.
 ```
 
 Those are separate open declarations in the same Formal Conjectures file.  The large explicit
-bound proves the uniform-existence target, but does not imply either sharper bound.
+bounds prove the uniform-existence target, but do not imply either sharper bound.
 
 ## Files
 
@@ -114,7 +148,8 @@ lake exe cache get
 lake build
 ```
 
-The entry file contains `#print axioms` commands for the final explicit and existence theorems.
+The entry file contains `#print axioms` commands for the final explicit, existence and VC_2
+theorems.
 The build succeeds under Lean 4.33.1, and the reported dependencies are Lean's standard
 foundations:
 
