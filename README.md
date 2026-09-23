@@ -1,4 +1,4 @@
-# A Lean proof of a finite additive VC_n bound for convex sets
+# VC_n dimension of convex sets in ℝⁿ⁺¹
 
 This repository contains a Lean proof of the uniform finite-bound target registered in
 [Formal Conjectures](https://github.com/google-deepmind/formal-conjectures/blob/b86fdb9a8f2f83d2bb2b4281586705896c0c8208/FormalConjectures/Other/VCDimConvex.lean).
@@ -29,7 +29,7 @@ the same statement as the pinned Formal Conjectures definition, and restates the
 public entry point is:
 
 ```lean
-theorem VCDimConvexBoundFC.vcdim_convex_uniform_bound_solved
+theorem VCDimConvexFC.vcdim_convex_uniform_bound_solved
     (n : ℕ) (hn : 1 ≤ n) :
     ∃ d : ℕ, ∀ C : Set (Fin (n + 1) → ℝ),
       Convex ℝ C → HasAddVCNDimAtMost C n d
@@ -38,13 +38,13 @@ theorem VCDimConvexBoundFC.vcdim_convex_uniform_bound_solved
 The stronger explicit theorem is:
 
 ```lean
-theorem VCDimConvexBound.explicit_bound
+theorem VCDimConvex.explicit_bound
     (n : ℕ) (hn : 1 ≤ n)
     (C : Set (Fin (n + 1) → ℝ)) (hC : Convex ℝ C) :
-    HasAddVCNDimAtMost C n (VCDimConvexBound.bound n)
+    HasAddVCNDimAtMost C n (VCDimConvex.bound n)
 ```
 
-Here `VCDimConvexBound.bound n` is defined as `2^(8 * (n + 2)^n) - 1`.
+Here `VCDimConvex.bound n` is defined as `2^(8 * (n + 2)^n) - 1`.
 
 The project is pinned to mathlib `v4.33.1` and Lean `v4.33.1`.  Exact dependency revisions are
 recorded in `lake-manifest.json`.
@@ -105,7 +105,7 @@ bound proves the uniform-existence target, but does not imply either sharper bou
 
 | Directory | Dependency | Purpose |
 |---|---|---|
-| repository root | mathlib + Lean 4.33.1 | Source modules (`VCDimConvexBound/`) and the FC-target entry point |
+| repository root | mathlib + Lean 4.33.1 | Source modules (`VCDimConvex/`) and the FC-target entry point |
 
 ## Verification
 
@@ -130,7 +130,7 @@ The project sources contain no `sorry`, `admit`, custom axiom, or `unsafe` theor
 - [Additive VC_n definition](https://github.com/google-deepmind/formal-conjectures/blob/b86fdb9a8f2f83d2bb2b4281586705896c0c8208/FormalConjecturesForMathlib/Combinatorics/Additive/VCDim.lean)
 - [Repository layout used as a model](https://github.com/KitaKen1/erdos-361-asymptotic)
 
-`VCDimConvexBound/Basic.lean` reproduces the relevant Formal Conjectures
+`VCDimConvex/Basic.lean` reproduces the relevant Formal Conjectures
 definition under the repository's Apache-2.0 license and record the pinned source above.
 
 ## AI usage disclosure
