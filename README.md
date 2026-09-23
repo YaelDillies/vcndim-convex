@@ -19,13 +19,6 @@ theorem vcdim_convex_uniform_bound_solved (n : ℕ) (hn : 1 ≤ n) :
 
 The witness is `d = 2^(8 * (n + 2)^n) - 1`.
 
-**Try the standalone file in Lean4Web:**
-[open the proof](https://live.lean-lang.org/#url=https%3A%2F%2Fraw.githubusercontent.com%2FKitaKen1%2Fvcdim-convex-finite-bound%2Frefs%2Fheads%2Fmain%2Flean4web%2FVCDimConvexBoundLean4Web.lean)
-
-The standalone file is ported to the current Lean4Web environment used for this release:
-Lean `v4.35.0-rc2` and mathlib commit
-`809072a6d0abd09be38833bf6d321f9837f23892`.  It elaborates there without errors or warnings.
-
 The upstream Formal Conjectures declaration is still marked `research open` at the pinned
 revision.
 
@@ -53,9 +46,8 @@ theorem VCDimConvexBound.explicit_bound
 
 Here `VCDimConvexBound.bound n` is defined as `2^(8 * (n + 2)^n) - 1`.
 
-The root project is pinned to mathlib `v4.33.1` and Lean `v4.33.1`.  The standalone project is
-separately pinned to Lean `v4.35.0-rc2`, matching the Lean4Web version current when it was
-verified.  Exact dependency revisions are recorded in the two `lake-manifest.json` files.
+The project is pinned to mathlib `v4.33.1` and Lean `v4.33.1`.  Exact dependency revisions are
+recorded in `lake-manifest.json`.
 
 ## Mathematical Explanation (AI generated)
 
@@ -114,40 +106,17 @@ bound proves the uniform-existence target, but does not imply either sharper bou
 | Directory | Dependency | Purpose |
 |---|---|---|
 | repository root | mathlib + Lean 4.33.1 | Source modules (`VCDimConvexBound/`) and the FC-target entry point |
-| `lean4web/` | mathlib + Lean 4.35.0-rc2 | Single-file standalone version for current Lean4Web |
-| `scripts/` | Python 3 | Rebuilds and applies the documented mathlib API port to the standalone file |
-
-The standalone file is generated from the dependency closure of
-`VCDimConvexBound.FCStatement`.  The generator also applies the small API renames between the
-pinned mathlib and current Lean4Web mathlib; it does not change any theorem
-statement or proof argument.  Regenerate it from the repository root with:
-
-```bash
-python3 scripts/build_lean4web.py
-```
 
 ## Verification
 
-Root project:
-
 ```bash
 lake exe cache get
 lake build
 ```
 
-Standalone mathlib/Lean4Web version:
-
-```bash
-cd lean4web
-lake update
-lake exe cache get
-lake build
-```
-
-Both entry files contain `#print axioms` commands for the final explicit and existence theorems.
-The root build succeeds under Lean 4.33.1, and the standalone build succeeds
-without warnings under Lean 4.35.0-rc2.  The reported dependencies in both environments are
-Lean's standard foundations:
+The entry file contains `#print axioms` commands for the final explicit and existence theorems.
+The build succeeds under Lean 4.33.1, and the reported dependencies are Lean's standard
+foundations:
 
 ```text
 [propext, Classical.choice, Quot.sound]
@@ -161,7 +130,7 @@ The project sources contain no `sorry`, `admit`, custom axiom, or `unsafe` theor
 - [Additive VC_n definition](https://github.com/google-deepmind/formal-conjectures/blob/b86fdb9a8f2f83d2bb2b4281586705896c0c8208/FormalConjecturesForMathlib/Combinatorics/Additive/VCDim.lean)
 - [Repository layout used as a model](https://github.com/KitaKen1/erdos-361-asymptotic)
 
-`VCDimConvexBound/Basic.lean` and the standalone file reproduce the relevant Formal Conjectures
+`VCDimConvexBound/Basic.lean` reproduces the relevant Formal Conjectures
 definition under the repository's Apache-2.0 license and record the pinned source above.
 
 ## AI usage disclosure
