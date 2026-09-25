@@ -1,3 +1,4 @@
+import VCDimConvex.BoundOne
 import VCDimConvex.Bound123
 import VCDimConvex.FCStatement
 import VCDimConvex.FinalBound
@@ -19,16 +20,18 @@ theorem vcdim_convex_uniform_bound_solved (n : ℕ) (hn : 1 ≤ n) :
     ∃ d : ℕ, ∀ C : Set (Fin (n + 1) → ℝ), Convex ℝ C → HasAddVCNDimAtMost C n d :=
   VCDimConvex.fc_exists_hasAddVCNDimAtMost_n_of_convex_rn_add_one n hn
 
+/-- Every convex set in `ℝ²` has additive VC dimension at most `3`. -/
+theorem vcdim_convex_one_le_three :
+    ∀ C : Set (Fin 2 → ℝ), Convex ℝ C → HasAddVCDimLE 3 C :=
+  VCDimConvex.explicit_bound_one
+
 /-- Every convex set in `ℝ³` has additive VC₂ dimension at most `123`. -/
 theorem vcdim_convex_two_le_123 :
     ∀ C : Set (Fin 3 → ℝ), Convex ℝ C → HasAddVCNDimAtMost C 2 123 :=
   VCDimConvex.explicit_bound_123
 
-#check VCDimConvex.explicit_bound
-#check vcdim_convex_uniform_bound_solved
-#check vcdim_convex_two_le_123
-#print axioms VCDimConvex.explicit_bound
 #print axioms vcdim_convex_uniform_bound_solved
+#print axioms vcdim_convex_one_le_three
 #print axioms vcdim_convex_two_le_123
 
 end VCDimConvexFC

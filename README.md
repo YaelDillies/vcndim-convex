@@ -1,102 +1,30 @@
-# VC_n dimension of convex sets in ℝⁿ⁺¹
+# VCₙ dimension of convex sets in ℝⁿ⁺¹
 
-This repository contains a Lean proof of the uniform finite-bound target registered in
-[Formal Conjectures](https://github.com/google-deepmind/formal-conjectures/blob/b86fdb9a8f2f83d2bb2b4281586705896c0c8208/FormalConjectures/Other/VCDimConvex.lean).
-For every `n ≥ 1` and every convex set `C ⊆ ℝ^(n+1)`, it proves the explicit estimate
+This repository investigates the VCₙ dimension of convex sets in ℝⁿ⁺¹.
 
-```text
-VC_n(C) ≤ 2^(8 (n + 2)^n) - 1.
-```
-
-Consequently, it proves the complete binder and conclusion of the Formal Conjectures theorem
-`VCDimConvex.exists_hasAddVCNDimAtMost_n_of_convex_rn_add_one`:
-
-```lean
-theorem vcdim_convex_uniform_bound_solved (n : ℕ) (hn : 1 ≤ n) :
-    ∃ d : ℕ, ∀ C : Set (Fin (n + 1) → ℝ),
-      Convex ℝ C → HasAddVCNDimAtMost C n d
-```
-
-The witness is `d = 2^(8 * (n + 2)^n) - 1`.
-
-For `n = 2` it proves the much smaller bound
+For every convex set `C ⊆ ℝ^(n+1)`, it proves the explicit estimates
 
 ```text
-VC_2(C) ≤ 123    for every convex C ⊆ ℝ³.
+VC(C)   ≤ 3                          for n = 1,
+VC_2(C) ≤ 123                        for n = 2,
+VC_n(C) ≤ 2 ^ (8 * (n + 2) ^ n) - 1  for n ≥ 1.
 ```
 
-The upstream Formal Conjectures declaration is still marked `research open` at the pinned
-revision.
+### The bound VC ≤ 3
 
-## Formal Conjectures target
+The planar case has a direct geometric proof (`VCDimConvex/BoundOne.lean`).  Suppose translates of
+a convex set `C ⊆ ℝ²` shatter four points `x₁, …, x₄`.  If one point lies in the convex hull of the
+other three, the translate that cuts out those three also contains the fourth.  Otherwise, by
+Radon's lemma, two segments meet, say `[x₁, x₃]` and `[x₂, x₄]`.  Let `y₁₃` and `y₂₄` be the
+translates cutting out `{1, 3}` and `{2, 4}`.  Of the eight points `y₁₃ + aᵢ` and `y₂₄ + aᵢ`,
+exactly four lie in `C`.  Write `y₁₃ - y₂₄` in the basis `x₃ - x₁`, `x₄ - x₂`.  Its quadrant, and
+one linear inequality, determine a point that should lie outside `C` but is a convex combination
+of three points that lie in `C`.  When the two segments are parallel, an endpoint of one segment
+lies in the other.
 
-The root Lake project depends only on mathlib.  It defines `HasAddVCNDimAtMost` locally, with
-the same statement as the pinned Formal Conjectures definition, and restates the target.  Its
-public entry point is:
+### The bound VC₂ ≤ 123
 
-```lean
-theorem VCDimConvexFC.vcdim_convex_uniform_bound_solved
-    (n : ℕ) (hn : 1 ≤ n) :
-    ∃ d : ℕ, ∀ C : Set (Fin (n + 1) → ℝ),
-      Convex ℝ C → HasAddVCNDimAtMost C n d
-```
-
-The stronger explicit theorem is:
-
-```lean
-theorem VCDimConvex.explicit_bound
-    (n : ℕ) (hn : 1 ≤ n)
-    (C : Set (Fin (n + 1) → ℝ)) (hC : Convex ℝ C) :
-    HasAddVCNDimAtMost C n (VCDimConvex.bound n)
-```
-
-Here `VCDimConvex.bound n` is defined as `2^(8 * (n + 2)^n) - 1`.
-
-The three-dimensional bound is:
-
-```lean
-theorem VCDimConvexFC.vcdim_convex_two_le_123 :
-    ∀ C : Set (Fin 3 → ℝ), Convex ℝ C → HasAddVCNDimAtMost C 2 123
-```
-
-The project is pinned to mathlib `v4.33.1` and Lean `v4.33.1`.  Exact dependency revisions are
-recorded in `lake-manifest.json`.
-
-## Mathematical Explanation (AI generated)
-
-The proof has two main parts.
-
-First, it proves the geometric sparsification needed for the convex-label count.  A finite
-hexagon complex, mod-two boundary identities, and a general-position removal argument give the
-specialized odd-map zero statement required by the Sanyal obstruction.  This produces small
-representative subsets for all relevant convex-hull labels.
-
-Second, it bounds polynomial sign patterns directly.  For polynomials `f_i`, let `P = ∏ i, f_i`
-and consider
-
-```text
-G(x) = P(x)^2 - ε (1 + ∑_j x_j^(2d+2)).
-```
-
-A common positive `ε` assigns a positive local maximum of `G` to every realized strict sign
-word.  At a local maximum, the derivative equations have the form
-
-```text
-x_j^(2d+1) = R_j(x),    degree R_j < 2d+1.
-```
-
-Total-degree reduction and finite-point polynomial interpolation show that such a system has at
-most `(2d+1)^p` distinct solutions in `p` variables.  Hence `N` polynomials of degree at most `k`
-realize at most `(2kN+1)^p` strict sign words.  Introducing one shared variable handles zero
-signs and gives the ternary bound `(4kN+1)^(p+1)`.  Applied to the determinant polynomials, this
-fits the numerical budget above.
-
-No general Warren theorem, hypersurface-component theorem, Sard theorem, or nondegeneracy of
-critical points is assumed by the final theorem.
-
-### The bound VC_2 ≤ 123
-
-In `ℝ³` the Sanyal route is replaced by a direct bound on convexly independent index sets
+In `ℝ³` there is a direct bound on convexly independent index sets
 (`VCDimConvex/ConvexIndependentBound.lean`).  Slice an `m × m × m` array into the layers
 `i₀ = j`.  If two layers share three tails, the six corresponding points `b_k`, `b_k + u` would all
 be strictly exposed by functionals annihilating the layer offset `w`.  This is impossible, because
