@@ -1,3 +1,14 @@
-.DS_Store
 .lake/
 lake-packages/
+
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.synctex.gz
+*.synctex.gz(busy)
+*.toc
+
+.DS_Store
