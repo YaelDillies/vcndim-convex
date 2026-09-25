@@ -8,8 +8,8 @@ an `n`-dimensional grid realizes every label on an `(n + 1)`-dimensional
 array. We place the new translation coordinate first; permuting coordinates
 gives the presentation with the translation coordinate last.
 
-The counting inequality remains an explicit hypothesis. This file does not
-prove that inequality or the unconditional bound for convex sets.
+The counting inequality is a hypothesis here. It is proved in `BoundOne`, `Bound123` and
+`BoundGeneral`.
 -/
 
 namespace VCDimConvex
@@ -58,23 +58,5 @@ theorem hasAddVCNDimAtMost_of_label_count_side (n m : ℕ) (hm : 0 < m)
   | succ d =>
     simpa only [Nat.succ_sub_one] using
       hasAddVCNDimAtMost_of_label_count n d hcount C hC
-
-/-- The proposed explicit bound follows if its missing counting estimate is supplied. -/
-theorem explicit_bound_of_label_count (n : ℕ)
-    (hcount : (convexLabels (n + 1) (2 ^ (8 * (n + 2) ^ n))).card <
-      2 ^ ((2 ^ (8 * (n + 2) ^ n)) ^ (n + 1)))
-    (C : Set (Point (n + 1))) (hC : Convex ℝ C) :
-    HasAddVCNDimAtMost C n (bound n) := by
-  exact hasAddVCNDimAtMost_of_label_count_side n _ (by positivity) hcount C hC
-
-/-- This conditional result has exactly the quantifiers needed by the FC existence problem. -/
-theorem exists_bound_of_label_count
-    (hcount : ∀ n : ℕ, 1 ≤ n →
-      (convexLabels (n + 1) (2 ^ (8 * (n + 2) ^ n))).card <
-        2 ^ ((2 ^ (8 * (n + 2) ^ n)) ^ (n + 1)))
-    (n : ℕ) (hn : 1 ≤ n) :
-    ∃ d : ℕ, ∀ C : Set (Fin (n + 1) → ℝ),
-      Convex ℝ C → HasAddVCNDimAtMost C n d := by
-  exact ⟨bound n, fun C hC => explicit_bound_of_label_count n (hcount n hn) C hC⟩
 
 end VCDimConvex

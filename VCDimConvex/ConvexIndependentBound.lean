@@ -113,31 +113,57 @@ theorem exists_combination_annihilating {E : Type*} [AddCommGroup E] [Module ℝ
   simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
   nlinarith
 
+/-- The functionals annihilating a subspace of codimension at most one are all proportional. -/
+theorem exists_forall_eq_smul_of_finrank {D : ℕ} (W : Submodule ℝ (Point D))
+    (hW : D ≤ finrank ℝ W + 1) :
+    ∃ φ : Dual ℝ (Point D), ∀ ν : Dual ℝ (Point D), (∀ w ∈ W, ν w = 0) → ∃ c : ℝ, ν = c • φ := by
+  have hann : finrank ℝ W.dualAnnihilator ≤ 1 := by
+    have := Subspace.finrank_add_finrank_dualAnnihilator_eq W
+    simp only [Module.finrank_fin_fun] at this
+    omega
+  have : Module.Free ℝ W.dualAnnihilator := Module.Free.of_divisionRing ℝ W.dualAnnihilator
+  obtain ⟨φ, hφ⟩ := (finrank_le_one_iff (K := ℝ) (V := W.dualAnnihilator)).mp hann
+  refine ⟨φ, fun ν hν => ?_⟩
+  obtain ⟨c, hc⟩ := hφ ⟨ν, (Submodule.mem_dualAnnihilator ν).mpr hν⟩
+  exact ⟨c, by simpa using congrArg Subtype.val hc.symm⟩
+
 /-- In `ℝ³`, the functionals annihilating two independent vectors form a line. -/
 theorem exists_forall_eq_smul_of_annihilate {u w : Point 3}
     (hind : LinearIndependent ℝ ![u, w]) :
     ∃ φ : Dual ℝ (Point 3), ∀ ν : Dual ℝ (Point 3), ν u = 0 → ν w = 0 → ∃ c : ℝ, ν = c • φ := by
   let W : Submodule ℝ (Point 3) := Submodule.span ℝ (Set.range ![u, w])
   have hW : Module.finrank ℝ W = 2 := by simpa [W] using finrank_span_eq_card hind
-  have hann : Module.finrank ℝ W.dualAnnihilator = 1 := by
-    have := Subspace.finrank_add_finrank_dualAnnihilator_eq W
-    simp only [hW, Module.finrank_fin_fun] at this
-    omega
-  have : Module.Free ℝ W.dualAnnihilator := Module.Free.of_divisionRing ℝ W.dualAnnihilator
-  obtain ⟨φ, -, hφ⟩ := (finrank_eq_one_iff' (K := ℝ) (V := W.dualAnnihilator)).mp (by convert hann)
-  refine ⟨φ, fun ν hu hw => ?_⟩
-  have hν : ν ∈ W.dualAnnihilator := by
-    rw [Submodule.mem_dualAnnihilator]
-    intro x hx
-    induction hx using Submodule.span_induction with
-    | mem x hx =>
-      obtain ⟨k, rfl⟩ := hx
-      fin_cases k <;> simpa
-    | zero => simp
-    | add x y _ _ hx hy => simp [hx, hy]
-    | smul c x _ hx => simp [hx]
-  obtain ⟨c, hc⟩ := hφ ⟨ν, hν⟩
-  exact ⟨c, by simpa using congrArg Subtype.val hc.symm⟩
+  obtain ⟨φ, hφ⟩ := exists_forall_eq_smul_of_finrank W (by omega)
+  refine ⟨φ, fun ν hu hw => hφ ν fun x hx => ?_⟩
+  induction hx using Submodule.span_induction with
+  | mem x hx =>
+    obtain ⟨k, rfl⟩ := hx
+    fin_cases k <;> simpa
+  | zero => simp
+  | add x y _ _ hx hy => simp [hx, hy]
+  | smul c x _ hx => simp [hx]
+
+/-- Multiples of a single functional strictly expose at most two of three points. -/
+theorem not_three_exposed_of_smul {E : Type*} [AddCommGroup E] [Module ℝ E] (φ : Dual ℝ E)
+    (b : Fin 3 → E) (c : Fin 3 → ℝ) (hc : ∀ k l, l ≠ k → c k * φ (b l) < c k * φ (b k)) :
+    False := by
+  have hne (k : Fin 3) : c k ≠ 0 := by
+    rintro h0
+    have := hc k (k + 1) (by fin_cases k <;> decide)
+    simp [h0] at this
+  -- Two of the three coefficients have the same sign, which gives opposite strict inequalities.
+  have key (k l : Fin 3) (hkl : k ≠ l) (hpos : 0 < c k * c l) : False := by
+    have h1 := hc k l hkl.symm
+    have h2 := hc l k hkl
+    have h3 : 0 < c k * (φ (b k) - φ (b l)) := by linarith
+    have h4 : 0 < c l * (φ (b l) - φ (b k)) := by linarith
+    nlinarith [mul_pos h3 h4, mul_nonneg hpos.le (sq_nonneg (φ (b k) - φ (b l)))]
+  rcases (hne 0).lt_or_gt with h0 | h0 <;> rcases (hne 1).lt_or_gt with h1 | h1 <;>
+    rcases (hne 2).lt_or_gt with h2 | h2
+  all_goals first
+    | exact key 0 1 (by decide) (by nlinarith)
+    | exact key 0 2 (by decide) (by nlinarith)
+    | exact key 1 2 (by decide) (by nlinarith)
 
 /-- **L1**: the six points `b k`, `b k + u` cannot all be strictly exposed by functionals
 annihilating a fixed nonzero vector `w`. -/
@@ -172,23 +198,7 @@ theorem not_all_exposed_segment_add_triangle
     obtain ⟨c, rfl⟩ := hφ ν₀ hν₀u (hν₀w w (hνw k) (hν'w k))
     exact ⟨c, fun l hl => by simpa using hν₀ _ _ (hν k l hl) (hν' k l hl)⟩
   choose c hc using hcomb
-  have hne (k : Fin 3) : c k ≠ 0 := by
-    rintro h0
-    have := hc k (k + 1) (by fin_cases k <;> decide)
-    simp [h0] at this
-  -- Two of the three coefficients have the same sign, which gives opposite strict inequalities.
-  have key (k l : Fin 3) (hkl : k ≠ l) (hpos : 0 < c k * c l) : False := by
-    have h1 := hc k l hkl.symm
-    have h2 := hc l k hkl
-    have h3 : 0 < c k * (φ (b k) - φ (b l)) := by linarith
-    have h4 : 0 < c l * (φ (b l) - φ (b k)) := by linarith
-    nlinarith [mul_pos h3 h4, mul_nonneg hpos.le (sq_nonneg (φ (b k) - φ (b l)))]
-  rcases (hne 0).lt_or_gt with h0 | h0 <;> rcases (hne 1).lt_or_gt with h1 | h1 <;>
-    rcases (hne 2).lt_or_gt with h2 | h2
-  all_goals first
-    | exact key 0 1 (by decide) (by nlinarith)
-    | exact key 0 2 (by decide) (by nlinarith)
-    | exact key 1 2 (by decide) (by nlinarith)
+  exact not_three_exposed_of_smul φ b c hc
 
 /-! ### The fibre bound along a fixed direction -/
 

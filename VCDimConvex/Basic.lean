@@ -110,7 +110,4 @@ noncomputable def convexLabels (D m : ℕ) : Finset (Set (Grid D m)) := by
     Fintype.card (Set (Grid D m)) = 2 ^ (m ^ D) := by
   simp
 
-/-- The explicit bound proposed in the paper argument. -/
-def bound (n : ℕ) : ℕ := 2 ^ (8 * (n + 2) ^ n) - 1
-
 end VCDimConvex

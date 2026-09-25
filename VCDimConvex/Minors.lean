@@ -136,27 +136,4 @@ theorem card_minorIndex_le (D m : ℕ) (hm : 0 < m) :
       simpa using Finset.card_le_univ R
     _ = 2 ^ (D + 1) * (m ^ D) ^ (D + 1) := by simp
 
-/-- The constant-row singleton already supplies one index for every grid point. -/
-theorem card_grid_le_minorIndex (D m : ℕ) :
-    m ^ D ≤ Fintype.card (MinorIndex D m) := by
-  classical
-  let e : Grid D m → MinorIndex D m := fun i => ⟨{none}, fun _ => i⟩
-  have he : Function.Injective e := by
-    intro i j h
-    have h' : (fun _ : ({none} : Finset (Option (Fin D))) => i) =
-        (fun _ : ({none} : Finset (Option (Fin D))) => j) :=
-      eq_of_heq (Sigma.mk.inj h).2
-    exact congrFun h' ⟨none, by simp⟩
-  simpa using Fintype.card_le_of_injective e he
-
-/-- A sufficient side-length condition for Warren after adding the perturbation variable. -/
-theorem minor_warren_size_condition (D m : ℕ) (hD : 2 ≤ D) (hm : D ^ 2 ≤ m) :
-    D ^ 2 * m + 1 ≤ 2 * Fintype.card (MinorIndex D m) := by
-  have hm0 : 0 < m := lt_of_lt_of_le (by positivity) hm
-  have hpow : m ^ 2 ≤ m ^ D := Nat.pow_le_pow_right hm0 hD
-  have hmul : D ^ 2 * m ≤ m ^ 2 := by nlinarith
-  have hm2 : 1 ≤ m ^ 2 := Nat.succ_le_of_lt (pow_pos hm0 2)
-  have hcard := card_grid_le_minorIndex D m
-  omega
-
 end VCDimConvex

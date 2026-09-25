@@ -1,4 +1,4 @@
-import VCDimConvex.FinalBound
+import VCDimConvex.BoundGeneral
 
 /-!
 # The exact pinned Formal Conjectures existence statement
@@ -13,6 +13,6 @@ namespace VCDimConvex
 
 theorem fc_exists_hasAddVCNDimAtMost_n_of_convex_rn_add_one (n : ℕ) (hn : 1 ≤ n) :
     ∃ d : ℕ, ∀ C : Set (Fin (n + 1) → ℝ), Convex ℝ C → HasAddVCNDimAtMost C n d :=
-  exists_bound n hn
+  ⟨_, explicit_bound_general n (by omega)⟩
 
 end VCDimConvex

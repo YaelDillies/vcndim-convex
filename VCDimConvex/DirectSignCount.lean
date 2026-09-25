@@ -1,5 +1,4 @@
 import VCDimConvex.PolynomialSignRegion
-import VCDimConvex.WarrenApplication
 
 /-!
 # Direct polynomial sign counting

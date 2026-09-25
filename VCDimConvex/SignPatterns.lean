@@ -1,13 +1,12 @@
 import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Tactic
 
 /-!
 # Strict and ternary sign patterns
 
-The zero-sign perturbation is separated from the still unproved Warren bound.
+Zero signs are removed by a perturbation with one extra variable and twice as many functions.
 Definitions quantify over all real inputs; no general-position assumption is imposed.
 -/
 
@@ -29,15 +28,6 @@ noncomputable def strictPatterns {ι α : Type*} [Fintype ι]
   classical
   exact Finset.univ.filter fun s =>
     ∃ x, ∀ i, if s i then 0 < f i x else f i x < 0
-
-/-- The strict sign-count estimate still to be proved (Warren).
-The positive variable and degree hypotheses avoid the zero-dimensional conventions. -/
-def WarrenStrictBound : Prop :=
-  ∀ (p N k : ℕ), 0 < p → 0 < k → p ≤ N →
-    ∀ f : Fin N → MvPolynomial (Fin p) ℝ,
-      (∀ i, (f i).totalDegree ≤ k) →
-      ((strictPatterns (fun i x => MvPolynomial.eval x (f i))).card : ℝ) ≤
-        (4 * Real.exp 1 * k * N / p) ^ p
 
 /-- A finite list has a common positive threshold below all its nonzero absolute values. -/
 theorem exists_positive_margin {ι : Type*} [Fintype ι] (a : ι → ℝ) :
@@ -123,8 +113,7 @@ theorem encodePattern_mem_strictPatterns {ι α : Type*} [Fintype ι]
   | false => simpa [encodePattern, perturbFunctions, hx i] using h.1
   | true => simpa [encodePattern, perturbFunctions, hx i] using h.2
 
-/-- Zero signs require only one extra real input and twice as many functions.
-This counting reduction does not assume Warren's theorem. -/
+/-- Zero signs require only one extra real input and twice as many functions. -/
 theorem card_ternaryPatterns_le_strictPatterns_perturb {ι α : Type*} [Fintype ι]
     (f : ι → α → ℝ) :
     (ternaryPatterns f).card ≤ (strictPatterns (perturbFunctions f)).card := by
@@ -164,5 +153,40 @@ theorem totalDegree_perturbPolynomials_le {ι σ : Type*}
   cases b with
   | false => exact (MvPolynomial.totalDegree_sub _ _).trans (max_le hr hX)
   | true => exact (MvPolynomial.totalDegree_add _ _).trans (max_le hr hX)
+
+/-- Reparametrizing the inputs surjectively does not change the strict sign patterns. -/
+theorem strictPatterns_comp_domain {ι α β : Type*} [Fintype ι]
+    (f : ι → α → ℝ) (u : β → α) (hu : Function.Surjective u) :
+    strictPatterns (fun i x => f i (u x)) = strictPatterns f := by
+  classical
+  ext s
+  simp only [strictPatterns, Finset.mem_filter, Finset.mem_univ, true_and]
+  constructor
+  · rintro ⟨x, hx⟩
+    exact ⟨u x, hx⟩
+  · rintro ⟨x, hx⟩
+    obtain ⟨y, rfl⟩ := hu x
+    exact ⟨y, hx⟩
+
+/-- The strict polynomial perturbations realize exactly the strict function perturbations. -/
+theorem card_strictPatterns_perturbPolynomials {ι σ : Type*} [Fintype ι]
+    (f : ι → MvPolynomial σ ℝ) :
+    (strictPatterns (fun j x => MvPolynomial.eval x (perturbPolynomials f j))).card =
+      (strictPatterns (perturbFunctions (fun i x => MvPolynomial.eval x (f i)))).card := by
+  classical
+  let u : ((σ → ℝ) × ℝ) → (Option σ → ℝ) := fun x o => o.elim x.2 x.1
+  have hu : Function.Surjective u := by
+    intro x
+    refine ⟨(fun i => x (some i), x none), ?_⟩
+    funext o
+    cases o <;> rfl
+  have he : (fun j x => MvPolynomial.eval (u x) (perturbPolynomials f j)) =
+      perturbFunctions (fun i x => MvPolynomial.eval x (f i)) := by
+    funext j x
+    exact eval_perturbPolynomials f x.1 x.2 j
+  have h := strictPatterns_comp_domain
+    (fun j x => MvPolynomial.eval x (perturbPolynomials f j)) u hu
+  rw [he] at h
+  exact (congrArg Finset.card h).symm
 
 end VCDimConvex

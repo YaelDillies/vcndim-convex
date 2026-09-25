@@ -1,5 +1,6 @@
 import VCDimConvex.ConvexIndependentBound
-import VCDimConvex.FinalBound
+import VCDimConvex.LabelCount
+import VCDimConvex.Shattering
 
 /-!
 # Additive VC₂ dimension at most 123 for convex sets in ℝ³
@@ -38,27 +39,37 @@ theorem card_convexLabels_le_signs_mul_small (m : ℕ) :
     (convexLabels 3 m).card ≤ (minorSignPatterns 3 m).card * (smallSubsets m).card :=
   card_convexLabels_le_signs_mul_generators _ fun _ hS => exists_small_generator hS
 
-/-- Lowering the size of a subset raises its weight `4 ^ |V| * 7 ^ (n - |V|)`. -/
-theorem weight_anti {n r s : ℕ} (hrs : r ≤ s) (hs : s ≤ n) :
-    4 ^ s * 7 ^ (n - s) ≤ 4 ^ r * 7 ^ (n - r) := by
+/-- For `a ≤ b`, lowering the size of a subset raises its weight `a ^ |V| * b ^ (n - |V|)`. -/
+theorem weight_anti {a b n r s : ℕ} (hab : a ≤ b) (hrs : r ≤ s) (hs : s ≤ n) :
+    a ^ s * b ^ (n - s) ≤ a ^ r * b ^ (n - r) := by
   obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le hrs
   rw [show n - r = n - (r + t) + t by omega]
   calc
-    4 ^ (r + t) * 7 ^ (n - (r + t)) = 4 ^ r * 7 ^ (n - (r + t)) * 4 ^ t := by ring
-    _ ≤ 4 ^ r * 7 ^ (n - (r + t)) * 7 ^ t := by gcongr; norm_num
+    a ^ (r + t) * b ^ (n - (r + t)) = a ^ r * b ^ (n - (r + t)) * a ^ t := by ring
+    _ ≤ a ^ r * b ^ (n - (r + t)) * b ^ t := by gcongr
     _ = _ := by ring
+
+/-- A weighted binomial count of the subsets of size at most `K`. -/
+theorem card_filter_card_le_mul_weight_le {α : Type*} [Fintype α] [DecidableEq α] (K a b : ℕ)
+    (hab : a ≤ b) (hK : K ≤ Fintype.card α) :
+    (univ.filter fun V : Finset α => V.card ≤ K).card * (a ^ K * b ^ (Fintype.card α - K)) ≤
+      (a + b) ^ Fintype.card α := by
+  calc
+    _ = ∑ _V ∈ univ.filter fun V : Finset α => V.card ≤ K, a ^ K * b ^ (Fintype.card α - K) := by
+      simp
+    _ ≤ ∑ V ∈ univ.filter fun V : Finset α => V.card ≤ K,
+        a ^ V.card * b ^ (Fintype.card α - V.card) :=
+      sum_le_sum fun V hV => weight_anti hab (mem_filter.mp hV).2 hK
+    _ ≤ ∑ V : Finset α, a ^ V.card * b ^ (Fintype.card α - V.card) :=
+      sum_le_sum_of_subset (subset_univ _)
+    _ = (a + b) ^ Fintype.card α := Fintype.sum_pow_mul_eq_add_pow α a b
 
 /-- **N0**: a weighted binomial count of the small subsets. -/
 theorem card_smallSubsets_mul_weight_le (m : ℕ) (h : R m ≤ m ^ 3) :
     (smallSubsets m).card * (4 ^ R m * 7 ^ (m ^ 3 - R m)) ≤ 11 ^ (m ^ 3) := by
   classical
-  calc
-    _ = ∑ _V ∈ smallSubsets m, 4 ^ R m * 7 ^ (m ^ 3 - R m) := by simp
-    _ ≤ ∑ V ∈ smallSubsets m, 4 ^ V.card * 7 ^ (m ^ 3 - V.card) :=
-      sum_le_sum fun V hV => weight_anti (mem_smallSubsets.mp hV) h
-    _ ≤ ∑ V : Finset (Grid 3 m), 4 ^ V.card * 7 ^ (m ^ 3 - V.card) :=
-      sum_le_sum_of_subset (subset_univ _)
-    _ = 11 ^ (m ^ 3) := by simpa using Fintype.sum_pow_mul_eq_add_pow (Grid 3 m) (4 : ℕ) 7
+  simpa [smallSubsets] using
+    card_filter_card_le_mul_weight_le (α := Grid 3 m) (R m) 4 7 (by norm_num) (by simpa using h)
 
 /-- **N1**: the numerical certificate at `m = 124`, checked by kernel arithmetic. -/
 theorem certificate_124 :

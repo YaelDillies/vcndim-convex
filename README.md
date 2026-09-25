@@ -7,7 +7,7 @@ For every convex set `C ⊆ ℝ^(n+1)`, it proves the explicit estimates
 ```text
 VC(C)   ≤ 3                          for n = 1,
 VC_2(C) ≤ 123                        for n = 2,
-VC_n(C) ≤ 2 ^ (8 * (n + 2) ^ n) - 1  for n ≥ 1.
+VC_n(C) ≤ 2 ^ (2 ^ (n + 1) + 2) - 1  for n ≥ 1.
 ```
 
 ### The bound VC ≤ 3
@@ -41,51 +41,26 @@ of such subsets, and the direct sign-pattern count bounds the rest.  The resulti
 between two numbers of about 3.6 million bits is checked by kernel arithmetic
 (`VCDimConvex/Bound123.lean`).
 
-## Status boundary
+### The bound VCₙ ≤ 2^(2^(n+1)+2) - 1
 
-What this repository proves:
-
-```text
-For every n ≥ 1, there is one finite d(n) that works for every convex
-C ⊆ ℝ^(n+1), with d(n) = 2^(8(n+2)^n) - 1.
-
-Every convex C ⊆ ℝ^3 has additive VC_2 dimension at most 123.
-```
-
-What it does not prove:
+A similar argument works in every dimension (`VCDimConvex/ConvexIndependentGeneral.lean`).  It
+inducts on the number of families of the array.  The induction also tracks a subspace `W` that
+every exposing functional must annihilate.  Two fibres over the first family differ by an offset
+`u`.  The two exposing functionals of a shared tail have opposite signs on `u`, so a combination of
+them also annihilates `u`.  The shared tails therefore form an instance with one family fewer and
+the subspace `W ⊔ ℝu`.  When one family is left, `W` is a hyperplane.  The functionals annihilating
+it are proportional, so they expose at most two points.  A Cauchy–Schwarz count at each step gives
 
 ```text
-Every convex C ⊆ ℝ^3 has additive VC_2 dimension at most 2.
-
-Every convex C ⊆ ℝ^(n+1) has additive VC_n dimension at most 3.
+V(0, m) = 2,    V(r+1, m) = m^(r+1) + ⌊√(m^(r+1) · m² · V(r, m))⌋.
 ```
 
-Those are separate open declarations in the same Formal Conjectures file.  The large explicit
-bounds prove the uniform-existence target, but do not imply either sharper bound.
-
-## Files
-
-| Directory | Dependency | Purpose |
-|---|---|---|
-| repository root | mathlib + Lean 4.33.1 | Source modules (`VCDimConvex/`) and the FC-target entry point |
-
-## Verification
-
-```bash
-lake exe cache get
-lake build
-```
-
-The entry file contains `#print axioms` commands for the final explicit, existence and VC_2
-theorems.
-The build succeeds under Lean 4.33.1, and the reported dependencies are Lean's standard
-foundations:
-
-```text
-[propext, Classical.choice, Quot.sound]
-```
-
-The project sources contain no `sorry`, `admit`, custom axiom, or `unsafe` theorem.
+At `m = 2^(2^(n+1)+2)`, `V(n, m)` is at most a quarter of the `m^(n+1)` grid points.  A weighted
+binomial count (weights `1` and `2`) bounds the small subsets, and the direct sign-pattern count
+bounds the rest.  Every numerical step is an elementary inequality valid for all `n ≥ 2`, so no
+certificate is needed (`VCDimConvex/BoundGeneral.lean`).  For `n = 1` these estimates fail, and
+the bound follows from the planar bound 3 below.  For `n = 2` the numerical certificate above
+gives the much smaller bound 123.
 
 ## Sources and attribution
 
