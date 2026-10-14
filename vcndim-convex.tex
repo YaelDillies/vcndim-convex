@@ -40,10 +40,10 @@
 \begin{abstract}
 For a subset $A$ of an abelian group $G$, the \emph{additive $\mathrm{VC}_n$
 dimension} of $A$ measures how large an $n$-dimensional additive grid $A$ can shatter
-by translations. It is an open problem whether every convex $C\subseteq\R^{n+1}$ has additive
-$\mathrm{VC}_n$ dimension at most $3$, or, in the case $n=2$, at most $2$; even the qualitative statement that some finite
-bound $d(n)$ works uniformly over all convex sets was open. We prove the uniform statement,
-with the explicit bound $d(n) = 2^{2^{n+1}+2}-1$. The proof is a polynomial-method argument
+by translations. We study the problem of determining the optimal bound $d^\ast(n)$ on the additive
+$\mathrm{VC}_n$ dimension of a convex set $C\subseteq\R^{n+1}$. It is not even known whether
+$d^\ast(n)\le3$ for all $n$, or whether $d^\ast(2)\le2$; the qualitative question whether
+$d^\ast(n)$ is finite was open. We prove that it is, with the explicit bound $d(n) = 2^{2^{n+1}+2}-1$. The proof is a polynomial-method argument
 with two halves: Warren's bound on the number of sign patterns of the minors of an additive
 grid, and a bound on convexly independent subsets of an additive grid, proved by induction on the
 number of colours while keeping track of a subspace which all exposing functionals annihilate. For $n=1$ we instead use the theorem of
@@ -114,15 +114,25 @@ least $3$ (and at most $501$). Convex sets are a natural Euclidean test case: in
 $\mathrm{VC}_n$ dimension is finite (Theorem~\ref{thm:main}), and in $\R^{n+2}$ it need not be
 (Theorem~\ref{thm:infinite}).
 
-The following three statements about convex sets are recorded as open problems in
-\cite{formalconjectures}:
+\begin{definition}\label{def:dstar}
+For $n\ge1$ let $d^\ast(n)$ be the least $d\in\N\cup\{\infty\}$ such that
+$\mathrm{VC}_n(C)\le d$ for every convex $C\subseteq\R^{n+1}$.
+\end{definition}
+
+\begin{question}[The problem]\label{q:main}
+Determine $d^\ast(n)$. In particular:
 \begin{enumerate}
-\item[(i)] every convex $C\subseteq\R^3$ has $\mathrm{VC}_2(C)\le2$;
-\item[(ii)] every convex $C\subseteq\R^{n+1}$ has $\mathrm{VC}_n(C)\le3$;
-\item[(iii)] for every $n\ge1$ there exists $d\in\N$ such that every convex
-$C\subseteq\R^{n+1}$ has $\mathrm{VC}_n(C)\le d$.
+\item[(a)] Is $d^\ast(n)$ finite for every $n\ge1$?
+\item[(b)] Is $d^\ast(n)\le3$ for every $n\ge1$?
+\item[(c)] Is $d^\ast(2)\le2$, that is, does every convex $C\subseteq\R^3$ satisfy
+$\mathrm{VC}_2(C)\le2$?
 \end{enumerate}
-Statement (iii) is the uniform-existence target. It is the subject of this paper.
+\end{question}
+
+Question~(a) is the qualitative problem and is answered in this paper. Questions (b) and (c) ask
+for the true value: a uniform bound independent of $n$, and for $n=2$ a bound one smaller
+still. For $n=1$ the value is at most $3$ by Naszódi and Taschuk (Theorem~\ref{thm:planar}). Whether $d^\ast(n)$ grows with $n$, and
+at what rate, is open; the bound proved here is doubly exponential in $n$.
 
 \subsection{The result}
 
@@ -132,14 +142,14 @@ Let $n\ge1$ and put
   d(n)\;:=\;2^{2^{n+1}+2}-1 .
 \]
 Then every convex $C\subseteq\R^{n+1}$ satisfies $\mathrm{VC}_n(C)\le d(n)$. In
-particular statement \textup{(iii)} holds, with witness $d=d(n)$.
+particular $d^\ast(n)\le d(n)<\infty$, which answers Question~\ref{q:main}(a).
 \end{theorem}
 
 In small dimensions much better bounds hold. The first is known.
 
 \begin{theorem}[Naszódi--Taschuk {\cite[Theorem~3]{naszoditaschuk}}]\label{thm:planar}
 Translates of a convex set $C\subseteq\R^{2}$ do not shatter any set of four points. In
-particular $\mathrm{VC}_1(C)\le3$, which is the case $n=1$ of statement \textup{(ii)}.
+particular $\mathrm{VC}_1(C)\le3$, so $d^\ast(1)\le3$, which is Question~\ref{q:main}(b) for $n=1$.
 \end{theorem}
 
 \begin{theorem}\label{thm:three}
@@ -155,7 +165,7 @@ For every $n\ge0$ there is a convex set $C\subseteq\R^{n+2}$ with $\mathrm{VC}_n
 $\mathrm{VC}_n(C)\le d$ fails for every $d$.
 \end{theorem}
 
-For $n\ge2$ neither of the sharper statements (i) and (ii) follows: the bound $d(n)$ is doubly
+For $n\ge2$ Questions~\ref{q:main}(b) and (c) remain open: the bound $d(n)$ is doubly
 exponential, whereas the conjectured truth is $3$.
 
 \subsection{Strategy}
@@ -737,9 +747,8 @@ the shattering of every finite grid with the same set.
 
 \subsection{What is not proved}
 
-The case $n=1$ of statement (ii) is Theorem~\ref{thm:planar}, due to Naszódi and Taschuk
-\cite{naszoditaschuk}. For $n\ge2$, neither (i) nor
-(ii) follows from the results here:
+The case $n=1$ of Question~\ref{q:main}(b) is Theorem~\ref{thm:planar}, due to Naszódi and
+Taschuk \cite{naszoditaschuk}. For $n\ge2$, neither (b) nor (c) follows from the results here:
 \[
   \mathrm{VC}_2(C)\le2\ \text{ for convex } C\subseteq\R^{3},
   \qquad
@@ -748,7 +757,7 @@ The case $n=1$ of statement (ii) is Theorem~\ref{thm:planar}, due to Naszódi an
 The bound $123$ for $n=2$, and the bound $d(n)=2^{2^{n+1}+2}-1$ in general, are far from the
 conjectured values. The counting method cannot reach a constant: the grid must have side length
 large enough that the number $2^{m^{n+1}}$ of subsets beats the sign patterns, and the side
-length $m$ itself is the bound obtained. A proof of (i) or (ii) would presumably have to exploit
+length $m$ itself is the bound obtained. A proof of (b) or (c) would presumably have to exploit
 convexity directly on the shattered configuration, as the proof of Theorem~\ref{thm:planar}
 does in the plane.
 
@@ -780,8 +789,8 @@ All the results of this paper are formalised in Lean~4.
 \subsection{The development}
 
 The development \cite{repo} is a single Lean~4 project on Lean \lean{v4.33.1} and Mathlib. Its
-entry file \lean{VCDimConvexFC.lean} restates the Formal Conjectures statements of (iii) and of
-Theorem~\ref{thm:infinite} verbatim and discharges them; the definition of $\mathrm{VC}_n$ is reproduced from \cite{formalconjectures}, and
+entry file \lean{VCDimConvexFC.lean} states the finiteness result and
+Theorem~\ref{thm:infinite} in terms of an explicit Lean definition of $\mathrm{VC}_n$, and
 the VC dimension of translates (\lean{HasAddVCDimLE}) is taken from \cite{meanfourier}. The
 sources contain no \lean{sorry}, no \lean{admit}, no custom \lean{axiom}, no
 \lean{native\_decide} and no \lean{unsafe} declaration; the only large computation is the
@@ -802,7 +811,7 @@ which implies $\mathrm{VC}_1(C)\le3$.
 \midrule
 \endhead
 Theorem~\ref{thm:main} & \lean{VCDimConvex.explicit\_bound\_general} \\
-Statement (iii) & \lean{VCDimConvex.fc\_exists\_\allowbreak hasAddVCNDimAtMost\_\allowbreak n\_of\_convex\_rn\_add\_one} \\
+Question~\ref{q:main}(a) & \lean{VCDimConvex.fc\_exists\_\allowbreak hasAddVCNDimAtMost\_\allowbreak n\_of\_convex\_rn\_add\_one} \\
 Theorem~\ref{thm:planar} & \lean{VCDimConvex.explicit\_bound\_one} \\
 Theorem~\ref{thm:three} & \lean{VCDimConvex.explicit\_bound\_123} \\
 Theorem~\ref{thm:infinite} & \lean{VCDimConvex.exists\_convex\_\allowbreak forall\_not\_\allowbreak hasAddVCNDimAtMost} \\
@@ -867,8 +876,7 @@ $x_3-x_1$, $x_4-x_2$).
 
 The original formalisation, with the bound $2^{8(n+2)^n}-1$, is due to Kenta Kitamura,
 developed with the assistance of large language models, and is released under the Apache~2.0
-licence; the Formal Conjectures statement and the definition of $\mathrm{VC}_n$ are reproduced
-from \cite{formalconjectures} under the same licence. This paper describes the current state
+licence. This paper describes the current state
 of the development, in which the fibre induction of Section~\ref{sec:vertices} replaces the
 original sparsity argument, and which adds formal proofs of the bounds for $n=1$
 (Theorem~\ref{thm:planar}, due to Naszódi and Taschuk \cite{naszoditaschuk}) and $n=2$
@@ -880,12 +888,6 @@ original sparsity argument, and which adds formal proofs of the bounds for $n=1$
 K.~Kitamura,
 \emph{A Lean proof of a finite additive $\mathrm{VC}_n$ bound for convex sets},
 \url{https://github.com/KitaKen1/vcdim-convex-finite-bound}.
-
-\bibitem{formalconjectures}
-Google DeepMind,
-\emph{Formal Conjectures}, file
-\lean{FormalConjectures/Other/VCDimConvex.lean}, revision \lean{b86fdb9},
-\url{https://github.com/google-deepmind/formal-conjectures}.
 
 \bibitem{meanfourier}
 Y.~Dillies,
