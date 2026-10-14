@@ -1,0 +1,982 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[expansion=false]{microtype}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{question}[theorem]{Question}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\vertt}{vert}
+\DeclareMathOperator{\supp}{supp}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Ftwo}{\mathbb{F}_2}
+\newcommand{\Grid}{\mathcal{G}}
+\newcommand{\lean}[1]{\texttt{\footnotesize #1}}
+
+\title{$\mathrm{VC}_n$ dimension of convex sets in $\R^{n + 1}$}
+
+\author{Yaël Dillies}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For a subset $A$ of an abelian group $G$, the \emph{additive $\mathrm{VC}_n$
+dimension} of $A$ measures how large an $n$-dimensional additive grid $A$ can shatter
+by translations. It is an open problem whether every convex $C\subseteq\R^{n+1}$ has additive
+$\mathrm{VC}_n$ dimension at most $3$, or, in the case $n=2$, at most $2$; even the qualitative statement that some finite
+bound $d(n)$ works uniformly over all convex sets was open. We prove the uniform statement,
+with the explicit bound $d(n) = 2^{2^{n+1}+2}-1$. The proof is a polynomial-method argument
+with two halves: Warren's bound on the number of sign patterns of the minors of an additive
+grid, and a bound on convexly independent subsets of an additive grid, proved by induction on the
+number of colours while keeping track of a subspace which all exposing functionals annihilate. For $n=1$ we instead use the theorem of
+Naszódi and Taschuk that translates of a planar convex set have $\mathrm{VC}$ dimension at most
+$3$, and for $n=2$ a numerical refinement gives the bound $123$. Finally, we show that the
+dimension $n+1$ is sharp: some convex set in $\R^{n+2}$ has infinite $\mathrm{VC}_n$ dimension.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}\label{sec:intro}
+
+\subsection{The problem}
+
+Let $G$ be an abelian group and $A\subseteq G$. Fix $n,d\in\N$ and write
+$[m]:=\{0,\dots,m-1\}$.
+
+\begin{definition}[Additive $\mathrm{VC}_n$ dimension]\label{def:vcn}
+A set $A\subseteq G$ \emph{has additive $\mathrm{VC}_n$ dimension at most $d$}, written
+$\mathrm{VC}_n(A)\le d$, if there is \emph{no} pair
+\[
+  x\colon [n]\times[d+1]\to G,
+  \qquad
+  y\colon \mathcal{P}\bigl([n]\to[d+1]\bigr)\to G
+\]
+such that
+\begin{equation}\label{eq:shatter}
+  y(S)+\sum_{k<n} x\bigl(k,i(k)\bigr)\in A
+  \iff
+  i\in S
+  \qquad\text{for all } i\colon[n]\to[d+1] \text{ and all } S.
+\end{equation}
+\end{definition}
+
+In words: $\mathrm{VC}_n(A)>d$ exactly when there is an $n$-dimensional grid of
+``directions'' $x$ of side length $d+1$ whose $(d+1)^n$ sums can be translated so as to
+realise \emph{every} subset of the grid inside $A$. For $n=1$ this is the ordinary VC
+dimension of the family of translates of $A$.
+
+\subsection{Origins of the \texorpdfstring{$\mathrm{VC}_n$}{VCn} dimension}
+
+The case $n=1$ goes back to Vapnik and Chervonenkis \cite{vc}, who introduced the dimension now
+named after them to prove uniform laws of large numbers. At the same time, and independently,
+Shelah \cite{shelah71} isolated the \emph{independence property} of a formula in model theory;
+Laskowski \cite{laskowski} later observed that a formula is dependent (NIP) exactly when the
+family of sets it defines has finite VC dimension.
+
+The higher-arity notion also comes from model theory. Shelah \cite{shelahstrongly,shelah2dep}
+introduced \emph{$n$-dependent} theories, in which no formula $\varphi(x_1,\dots,x_n;y)$ can
+encode a random $(n+1)$-partite $(n+1)$-uniform hypergraph. Chernikov, Palacín and Takeuchi
+\cite{cpt} developed the combinatorics of this notion. In their terms, an $(n+1)$-ary relation
+$R\subseteq X_1\times\dots\times X_n\times Y$ has $\mathrm{VC}_n$ dimension at least $d+1$ if there
+are $a_{k,j}\in X_k$ ($k<n$, $j\le d$) and $b_S\in Y$ ($S\subseteq[d+1]^{n}$) with
+$R(a_{0,i(0)},\dots,a_{n-1,i(n-1)};b_S)$ if and only if $i\in S$. They showed that a formula is
+$n$-dependent exactly when it has finite $\mathrm{VC}_n$ dimension, and proved a generalisation of
+the Sauer--Shelah lemma for it. Chernikov and Towsner \cite{chernikovtowsner} then showed that
+hypergraphs of bounded $\mathrm{VC}_n$ dimension admit hypergraph regularity decompositions that
+use only the first $n$ levels.
+
+Definition~\ref{def:vcn} is the additive specialisation, to the relation $y+x_1+\dots+x_n\in A$
+on an abelian group. For $n=1$, sets of bounded VC dimension in abelian groups have strong
+arithmetic regularity properties, studied by Alon, Fox and Zhao \cite{afz} and by Sisask
+\cite{sisask}. For $n=2$, Terry and Wolf \cite{terrywolf,terrywolfvc2} proved that subsets of
+$\mathbb{F}_p^{m}$ of bounded $\mathrm{VC}_2$ dimension are well approximated by unions of atoms
+of a bounded-complexity quadratic factor. Gladkova \cite{gladkova} confirmed their conjecture that
+the ``quadratic Green--Sanders example'' in $\mathbb{F}_p^{m}$ has $\mathrm{VC}_2$ dimension at
+least $3$ (and at most $501$). Convex sets are a natural Euclidean test case: in $\R^{n+1}$ the
+$\mathrm{VC}_n$ dimension is finite (Theorem~\ref{thm:main}), and in $\R^{n+2}$ it need not be
+(Theorem~\ref{thm:infinite}).
+
+The following three statements about convex sets are recorded as open problems in
+\cite{formalconjectures}:
+\begin{enumerate}
+\item[(i)] every convex $C\subseteq\R^3$ has $\mathrm{VC}_2(C)\le2$;
+\item[(ii)] every convex $C\subseteq\R^{n+1}$ has $\mathrm{VC}_n(C)\le3$;
+\item[(iii)] for every $n\ge1$ there exists $d\in\N$ such that every convex
+$C\subseteq\R^{n+1}$ has $\mathrm{VC}_n(C)\le d$.
+\end{enumerate}
+Statement (iii) is the uniform-existence target. It is the subject of this paper.
+
+\subsection{The result}
+
+\begin{theorem}\label{thm:main}
+Let $n\ge1$ and put
+\[
+  d(n)\;:=\;2^{2^{n+1}+2}-1 .
+\]
+Then every convex $C\subseteq\R^{n+1}$ satisfies $\mathrm{VC}_n(C)\le d(n)$. In
+particular statement \textup{(iii)} holds, with witness $d=d(n)$.
+\end{theorem}
+
+In small dimensions much better bounds hold. The first is known.
+
+\begin{theorem}[Naszódi--Taschuk {\cite[Theorem~3]{naszoditaschuk}}]\label{thm:planar}
+Translates of a convex set $C\subseteq\R^{2}$ do not shatter any set of four points. In
+particular $\mathrm{VC}_1(C)\le3$, which is the case $n=1$ of statement \textup{(ii)}.
+\end{theorem}
+
+\begin{theorem}\label{thm:three}
+Every convex $C\subseteq\R^{3}$ satisfies $\mathrm{VC}_2(C)\le123$.
+\end{theorem}
+
+The dimension $n+1$ in Theorem~\ref{thm:main} cannot be increased. For $n=1$ this is the
+example of Naszódi and Taschuk \cite[Example~4]{naszoditaschuk} of a convex body in $\R^{3}$
+whose translates have infinite VC dimension, and the following theorem extends it to all $n$.
+
+\begin{theorem}\label{thm:infinite}
+For every $n\ge0$ there is a convex set $C\subseteq\R^{n+2}$ with $\mathrm{VC}_n(C)=\infty$, i.e.\
+$\mathrm{VC}_n(C)\le d$ fails for every $d$.
+\end{theorem}
+
+For $n\ge2$ neither of the sharper statements (i) and (ii) follows: the bound $d(n)$ is doubly
+exponential, whereas the conjectured truth is $3$.
+
+\subsection{Strategy}
+
+For $n\ge2$, everything rests on a counting reduction. Fix $D:=n+1$ and a side length $m$. An
+\emph{additive array} is a map $z\colon[D]\times[m]\to\R^D$, and it assigns to each grid
+index $i\in\Grid:=[m]^{[D]}$ the point
+\[
+  \Sigma z(i)\;:=\;\sum_{k<D}z\bigl(k,i(k)\bigr)\in\R^D .
+\]
+Call $S\subseteq\Grid$ a \emph{convex label} if there is a convex $C\subseteq\R^D$ and an
+additive array $z$ with $S=\{i:\Sigma z(i)\in C\}$, and let $\mathcal{L}(D,m)$ be the set
+of convex labels.
+
+The whole proof is the inequality
+\begin{equation}\label{eq:target}
+  \bigl|\mathcal{L}(D,m)\bigr| \;<\; 2^{m^{D}}
+  \qquad\text{for}\qquad m=2^{2^{D}+2},
+\end{equation}
+that is: \emph{not every} subset of the grid is a convex label. Since shattering at scale
+$m$ would force \emph{all} $2^{m^D}$ subsets to be labels (Proposition~\ref{prop:shatter}),
+\eqref{eq:target} gives $\mathrm{VC}_{D-1}(C)\le m-1$ for every convex $C$, which is
+Theorem~\ref{thm:main}.
+
+Inequality~\eqref{eq:target} is proved by exhibiting an injective code for convex labels
+with two coordinates:
+\[
+  \mathcal{L}(D,m)\;\hookrightarrow\;
+  \underbrace{\Sigma(D,m)}_{\text{sign vectors of all minors}}\times
+  \underbrace{\mathcal{G}_K}_{\text{subsets of size}\le K} .
+\]
+The first factor is the classical polynomial-method coordinate: a label is determined by
+the signs of all the determinants built from the homogenised array, and sign patterns of
+low-degree polynomials are few (Section~\ref{sec:signs}). The second factor requires a
+genuinely convex-geometric input: the set of hull generators of a label is convexly independent,
+and a convexly independent set of indices has at most $K=V(n,m)$ elements, which is at most a
+quarter of the grid at our choice of $m$ (Section~\ref{sec:vertices}). Section~\ref{sec:numerics}
+carries out the arithmetic. For $n=1$ this arithmetic fails, and Section~\ref{sec:planar}
+deduces the case $n=1$ from Theorem~\ref{thm:planar} instead. Section~\ref{sec:three} sketches
+Theorem~\ref{thm:three}, and Section~\ref{sec:infinite} proves Theorem~\ref{thm:infinite}.
+Section~\ref{sec:status} discusses the gap to the conjectured bounds,
+and Section~\ref{sec:formal} describes a formalisation of all the results in Lean~4.
+
+The main new ingredient is Theorem~\ref{thm:fibre}, a bound on convexly independent subsets of
+an additive grid, proved by an induction on the number of colours which carries along a subspace of
+directions annihilated by every exposing functional.
+
+\subsection{Conventions}
+
+Throughout, $D\ge1$ is an integer (so $n=D-1$), $m\ge1$ is a side length,
+$\Grid=\Grid(D,m)=[m]^{[D]}$ is the grid of size $M:=m^D$. For
+$x\in\R^D$ we write $\hat x:=(1,x)$ for its homogenisation, with the extra
+coordinate indexed by a symbol $\ast$, so that rows of homogenised matrices are indexed by
+$\{\ast\}\sqcup[D]$. All convex hulls are over $\R$. We use the three-valued sign code
+$\sgn\colon\R\to\{-,0,+\}$.
+
+\section{From shattering to a counting problem}\label{sec:counting}
+
+\begin{proposition}[Shattering realises all labels]\label{prop:shatter}
+Let $G$ be an abelian group, $C\subseteq G$, $n,m\ge1$, and suppose that
+$x\colon[n]\times[m]\to G$ and $y$ witness \eqref{eq:shatter} for $C$ at side length
+$m=d+1$. Then every $S\subseteq\Grid(n+1,m)$ is realised by an additive array in $C$; that
+is, there is $z\colon[n+1]\times[m]\to G$ with $S=\{i:\Sigma z(i)\in C\}$.
+\end{proposition}
+
+\begin{proof}
+Given $S$, and for $j\in[m]$, write $S_j:=\{i'\in\Grid(n,m) : (j,i')\in S\}$, where
+$(j,i')$ denotes the tuple in $\Grid(n+1,m)$ with first entry $j$ and tail $i'$. Define
+\[
+  z(0,j):=y(S_j),\qquad z(k+1,\cdot):=x(k,\cdot)\quad(k<n).
+\]
+Then for $i=(j,i')$,
+\[
+  \Sigma z(i) \;=\; y(S_j)+\sum_{k<n}x\bigl(k,i'(k)\bigr),
+\]
+which lies in $C$ iff $i'\in S_j$ by \eqref{eq:shatter}, i.e.\ iff $i\in S$.
+\end{proof}
+
+The point of Proposition~\ref{prop:shatter} is that a shattering configuration uses only
+$m$ of the $2^{m^n}$ available translations, but nevertheless forces \emph{every} label to
+occur, \emph{with $C$ held fixed}. Consequently:
+
+\begin{corollary}\label{cor:reduction}
+Let $n\ge1$ and $m\ge1$. If $|\mathcal{L}(n+1,m)|<2^{m^{n+1}}$, then every convex
+$C\subseteq\R^{n+1}$ satisfies $\mathrm{VC}_n(C)\le m-1$.
+\end{corollary}
+
+\begin{proof}
+If not, fix $C$ and a shattering pair $(x,y)$ at side length $m$. By
+Proposition~\ref{prop:shatter} every $S\subseteq\Grid(n+1,m)$ is a convex label, so
+$|\mathcal{L}(n+1,m)|=2^{m^{n+1}}$, a contradiction.
+\end{proof}
+
+From here on the ambient convex
+set plays no further role: we must count labels.
+
+\section{Coding a label}\label{sec:code}
+
+\subsection{Reduction to a finite hull}
+
+Fix an additive array $z$ and write $q:=\Sigma z\colon\Grid\to\R^D$ for the induced
+configuration of $M=m^D$ points (possibly with repetitions).
+
+\begin{lemma}[Hull encoding]\label{lem:hull}
+Let $C\subseteq\R^D$ be convex and $q\colon\Grid\to\R^D$ arbitrary. Then there is
+$V\subseteq\Grid$ such that
+\begin{enumerate}
+\item $q(i)\in C\iff q(i)\in\conv q(V)$ for all $i\in\Grid$; and
+\item $V$ is \emph{convex independent}: $q(i)\notin\conv q(V\setminus\{i\})$ for all
+      $i\in V$ (in particular $q|_V$ is injective).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Let $E:=\{i: q(i)\in C\}$. Since $C$ is convex and $q(E)\subseteq C$, we get
+$\conv q(E)\subseteq C$, so $q(i)\in C\iff q(i)\in\conv q(E)$. Choose $V\subseteq E$ of
+minimal cardinality with $\conv q(V)=\conv q(E)$. If some $i\in V$ satisfied
+$q(i)\in\conv q(V\setminus\{i\})$ then $\conv q(V\setminus\{i\})=\conv q(V)$, contradicting
+minimality.
+\end{proof}
+
+Thus a convex label $S$ is recovered from the pair $(q,V)$ by
+$S=\{i : q(i)\in\conv q(V)\}$. Neither closedness nor boundedness of $C$ is used, and $q$
+may be degenerate (repeated points, lower-dimensional affine hull).
+
+\subsection{Minors determine finite hull membership}
+
+We now replace $q$ by a finite sign vector. Let
+\[
+  A(q)\;\in\;\R^{(\{\ast\}\sqcup[D])\times\Grid},
+  \qquad
+  A(q)_{\ast,i}=1,\quad A(q)_{a,i}=q(i)_a ,
+\]
+be the homogenised configuration matrix, whose $i$-th column is $\widehat{q(i)}$. A
+\emph{minor index} is a pair $(R,c)$ with $R\subseteq\{\ast\}\sqcup[D]$ and
+$c\colon R\to\Grid$ arbitrary (repetitions allowed); the associated minor is
+$\det\bigl(A(q)_{R,c}\bigr)$. Say $q,q'$ have \emph{the same minor signs} if
+$\sgn\det A(q)_{R,c}=\sgn\det A(q')_{R,c}$ for all $(R,c)$.
+
+\begin{theorem}[Minor signs determine hulls]\label{thm:minorhull}
+If $q,q'\colon\Grid\to\R^D$ have the same minor signs, then for every finite
+$V\subseteq\Grid$ and every $i\in\Grid$,
+\[
+  q(i)\in\conv q(V)\iff q'(i)\in\conv q'(V).
+\]
+\end{theorem}
+
+\begin{proof}
+It suffices to prove one implication. Suppose $q(i)\in\conv q(V)$. Homogenising, convex
+membership is the statement that $\widehat{q(i)}$ is a nonnegative combination of the
+columns $\widehat{q(v)}$, $v\in V$ (the $\ast$-row enforces that the weights sum to $1$).
+By Carathéodory's theorem there are $r\le D+1$, an injection
+$c\colon[r]\to V$ with $\bigl(\widehat{q(c(j))}\bigr)_j$ linearly independent, and weights
+$w_j>0$ with $\sum_j w_j\widehat{q(c(j))}=\widehat{q(i)}$.
+
+Write $B:=A(q)$, $B':=A(q')$. Three consequences of equal minor signs:
+\begin{enumerate}
+\item[(a)] \emph{Independence transfers.} A family of columns of $B$ is independent iff some
+square row restriction of it is nonsingular; the corresponding minor of $B'$ has the same
+sign, hence is also nonzero, so the columns $\bigl(\widehat{q'(c(j))}\bigr)_j$ are
+independent as well.
+\item[(b)] \emph{Span membership transfers.} Applying (a) to the family $c$ enlarged by the
+column $i$ shows that $B\,e_i$ lies in the span of the $B\,e_{c(j)}$ iff the same
+holds for $B'$. Hence there are (a priori arbitrary) reals $v_j$ with
+$\sum_j v_j\widehat{q'(c(j))}=\widehat{q'(i)}$.
+\item[(c)] \emph{Signs of the weights transfer.} Choose rows $\rho\colon[r]\hookrightarrow
+\{\ast\}\sqcup[D]$ making $B_{\rho,c}$ nonsingular; then $B'_{\rho,c}$ is nonsingular too.
+On these rows, $w$ and $v$ are the unique solutions of the respective square systems, so by
+Cramer's rule
+\[
+  w_j=\frac{\det\bigl(B_{\rho,c}\text{ with column }j\text{ replaced by }B_{\rho,i}\bigr)}
+           {\det B_{\rho,c}},
+\]
+and likewise for $v_j$. Both numerator and denominator are minors of the family indexed by
+$(\rho,\,c\text{ with }j\mapsto i)$ and $(\rho,c)$ respectively; their signs agree between
+$q$ and $q'$. Hence $w_j\ge0$ implies $v_j\ge0$.
+\end{enumerate}
+So $v\ge0$, and $\sum_j v_j\widehat{q'(c(j))}=\widehat{q'(i)}$ exhibits
+$q'(i)\in\conv q'(V)$.
+\end{proof}
+
+The proof deliberately avoids general position: the ambient configuration may be
+rank-deficient, and the nonsingular square block is selected locally.
+
+\subsection{The product bound}
+
+Let $\Sigma(D,m)$ be the set of sign vectors $\bigl(\sgn\det A(\Sigma z)_{R,c}\bigr)_{(R,c)}$
+realised by additive arrays $z$, and let $\mathcal{G}$ be any family of subsets of $\Grid$
+which contains a witness $V$ as in Lemma~\ref{lem:hull} for every convex label.
+
+\begin{corollary}\label{cor:product}
+$\bigl|\mathcal{L}(D,m)\bigr|\le\bigl|\Sigma(D,m)\bigr|\cdot|\mathcal{G}|$.
+\end{corollary}
+
+\begin{proof}
+Map each label $S$ to the pair (minor sign vector of its chosen array, its chosen $V$).
+If two labels $S,T$ receive the same pair, then by Theorem~\ref{thm:minorhull} their
+defining conditions $q(i)\in\conv q(V)$ and $q'(i)\in\conv q'(V)$ agree for all $i$, so
+$S=T$.
+\end{proof}
+
+It remains to bound $|\Sigma(D,m)|$ (Section~\ref{sec:signs}) and to produce a small
+family $\mathcal{G}$ (Section~\ref{sec:vertices}).
+
+\section{Counting sign patterns}\label{sec:signs}
+
+The classical tool here is Warren's theorem.
+
+\begin{theorem}[Warren {\cite[Theorem~3]{warren}}]\label{thm:warren}
+Let $f_1,\dots,f_N\in\R[x_1,\dots,x_p]$ with $\deg f_i\le k$ for all $i$, and $N\ge p$. Then the
+number of sign words $s\in\{+,-\}^N$ for which there exists $x\in\R^p$ with
+$\sgn f_i(x)=s_i$ for all $i$ is at most $(4ekN/p)^{p}$.
+\end{theorem}
+
+We need the version which also records zero signs. It follows by a standard perturbation.
+
+\begin{corollary}[Ternary sign count]\label{cor:ternary}
+With $f_i$ as above and $2N\ge p$, the number of realised \emph{ternary} sign vectors
+$\bigl(\sgn f_i(x)\bigr)_{i}\in\{-,0,+\}^N$ is at most $(8ekN/p)^{p}$.
+\end{corollary}
+
+\begin{proof}
+Choose a witness $x$ for each of the finitely many realised ternary vectors, and $\varepsilon>0$
+smaller than $|f_i(x)|$ for every witness $x$ and every $i$ with $f_i(x)\ne0$. At a witness $x$,
+\[
+  \bigl(\sgn(f_i(x)-\varepsilon),\ \sgn(f_i(x)+\varepsilon)\bigr)=
+  \begin{cases}
+   (-,-) & f_i(x)<0,\\
+   (-,+) & f_i(x)=0,\\
+   (+,+) & f_i(x)>0,
+  \end{cases}
+\]
+so the ternary vector is recovered injectively from a strict sign word of the $2N$ polynomials
+$f_i\pm\varepsilon$. Apply Theorem~\ref{thm:warren} to them.
+\end{proof}
+
+Now specialise. The variables are the $D^2m$ coordinates of the array $z$; the entries of
+the homogenised matrix are the polynomials
+\[
+  \ast\text{-row}:\ 1,
+  \qquad
+  a\text{-row}:\ \sum_{k<D}X_{(k,\,i(k),\,a)} \ \ (a<D),
+\]
+of degree $0$ and $1$ respectively. A minor with row set $R$ therefore has total degree at
+most $\sum_{r\in R}\deg(\text{row } r)\le D$, \emph{including} the maximal minors of size
+$D+1$. Allowing repeated columns (whose determinant is $0$) avoids a factorial, and the
+number of minor indices is at most
+\[
+  \mathcal{N}(D,m)\;=\;2^{D+1}\bigl(m^{D}\bigr)^{D+1}.
+\]
+
+\begin{theorem}\label{thm:minorsigns}
+For $D\ge1$ and $m\ge1$,
+\[
+  \bigl|\Sigma(D,m)\bigr|\;\le\;\Bigl(\frac{8e\,\mathcal{N}(D,m)}{Dm}\Bigr)^{D^2m}.
+\]
+\end{theorem}
+
+\begin{proof}
+Corollary~\ref{cor:ternary} with $k=D$, $N=\mathcal{N}(D,m)$ and $p=D^2m\le2N$.
+\end{proof}
+
+At a side length which is a power of two, the bound takes a simpler shape.
+
+\begin{corollary}\label{cor:signpow}
+Let $D\ge1$, $L\ge8$ and $m=2^{L}$. Then $\bigl|\Sigma(D,m)\bigr|\le2^{\,4L(D+1)^{4}m}$.
+\end{corollary}
+
+\begin{proof}
+The base in Theorem~\ref{thm:minorsigns} is at most
+$2^{5}\cdot2^{D+1}\cdot2^{LD(D+1)}\le2^{2L(D+1)^{2}}$, and the exponent satisfies
+$D^{2}m\le2(D+1)^{2}m$.
+\end{proof}
+
+\section{Convexly independent subsets of an additive grid}\label{sec:vertices}
+
+We now produce the second coordinate of the code. By Lemma~\ref{lem:hull} the generator set $V$
+of a label can be taken convexly independent, so it suffices to show that convexly independent
+sets of indices are small. The argument inducts on the number of colours, and uses nothing but
+linear algebra and the Cauchy--Schwarz inequality.
+
+\subsection{Exposing functionals}
+
+For an array $a\colon[r]\times[m]\to\R^D$ and $x\in[m]^{[r]}$ write
+$\Sigma a(x):=\sum_{k<r}a\bigl(k,x(k)\bigr)$. Say that a functional $\nu\in(\R^D)^{*}$
+\emph{strictly exposes} $x$ in $S\subseteq[m]^{[r]}$ if $\nu(\Sigma a(y))<\nu(\Sigma a(x))$ for
+all $y\in S\setminus\{x\}$.
+
+\begin{lemma}\label{lem:expose}
+If $V$ is convexly independent for $q$, then every $i\in V$ is strictly exposed in $V$ by some
+functional: $\nu(q(j))<\nu(q(i))$ for all $j\in V\setminus\{i\}$.
+\end{lemma}
+
+\begin{proof}
+The hull of the finitely many points $q(j)$, $j\ne i$, is compact and does not contain $q(i)$;
+apply the Hahn--Banach separation theorem.
+\end{proof}
+
+\begin{lemma}\label{lem:combine}
+Let $\nu,\nu'$ be linear functionals on a real vector space and $u$ a vector with $\nu(u)<0<\nu'(u)$.
+Then $\nu_0:=\nu'(u)\,\nu-\nu(u)\,\nu'$ satisfies $\nu_0(u)=0$; every strict inequality
+$\nu(x)<\nu(y)$ which also holds for $\nu'$ holds for $\nu_0$; and every vector annihilated by both
+$\nu$ and $\nu'$ is annihilated by $\nu_0$.
+\end{lemma}
+
+\begin{proof}
+$\nu_0$ is a combination of $\nu$ and $\nu'$ with positive coefficients $\nu'(u)$ and $-\nu(u)$.
+\end{proof}
+
+\begin{lemma}\label{lem:twopoints}
+Let $W\le\R^D$ have codimension at most $1$. Then no three indices of a set $S$ are strictly
+exposed in $S$ by functionals vanishing on $W$.
+\end{lemma}
+
+\begin{proof}
+The functionals vanishing on $W$ form a space of dimension at most $1$, so they are the multiples
+$c\,\varphi$ of a single $\varphi$. A multiple exposing a point strictly has $c\ne0$. Of three
+exposed indices, two, say $x$ and $y$, are exposed by multiples with the same sign; but then
+$\varphi(\Sigma a(y))<\varphi(\Sigma a(x))$ and $\varphi(\Sigma a(x))<\varphi(\Sigma a(y))$, or
+the same with both inequalities reversed.
+\end{proof}
+
+\subsection{The fibre induction}
+
+\begin{lemma}[Cauchy--Schwarz for intersecting families]\label{lem:cs}
+Let $F_1,\dots,F_k$ be subsets of a finite set $X$ with $|F_i\cap F_j|\le K$ for all $i\ne j$.
+Then
+\[
+  \Bigl(\sum_i|F_i|\Bigr)^{2}\;\le\;|X|\Bigl(\sum_i|F_i|+k(k-1)K\Bigr).
+\]
+\end{lemma}
+
+\begin{proof}
+Let $d(x):=|\{i:x\in F_i\}|$. Then $\sum_xd(x)=\sum_i|F_i|$ and
+$\sum_xd(x)^2=\sum_{i,j}|F_i\cap F_j|\le\sum_i|F_i|+k(k-1)K$. Conclude by
+$(\sum_xd(x))^2\le|X|\sum_xd(x)^2$.
+\end{proof}
+
+Define the \emph{vertex bound}
+\[
+  V(0,m):=2,\qquad
+  V(r+1,m):=m^{r+1}+\Bigl\lfloor\sqrt{m^{r+1}\cdot m^{2}\cdot V(r,m)}\Bigr\rfloor .
+\]
+
+\begin{theorem}[Fibre induction]\label{thm:fibre}
+Let $r,m,D\in\N$, let $a\colon[r+1]\times[m]\to\R^D$, and let $W\le\R^D$ be a subspace with
+$D\le r+1+\dim W$. Let $S\subseteq[m]^{[r+1]}$ be such that every $x\in S$ is strictly exposed
+in $S$ by a functional vanishing on $W$. Then $|S|\le V(r,m)$.
+\end{theorem}
+
+\begin{proof}
+Induct on $r$. For $r=0$, $W$ has codimension at most $1$ and Lemma~\ref{lem:twopoints} gives
+$|S|\le2$.
+
+Let $r\ge0$, and consider $r+2$ colours. For $i\in[m]$ let
+$F_i:=\{t\in[m]^{[r+1]}:(i,t)\in S\}$ be the fibre of $S$ over $i$, where $(i,t)$ denotes the index
+with first entry $i$ and tail $t$. Then $\sum_i|F_i|=|S|$. Write $a'$ for the array $a$ with the
+first colour removed, so that $\Sigma a(i,t)=a(0,i)+\Sigma a'(t)$.
+
+\smallskip\noindent\emph{Two fibres share few tails.} Fix $i\ne i'$, put $T:=F_i\cap F_{i'}$ and
+$u:=a(0,i')-a(0,i)$. For $t\in T$ let $\nu$ and $\nu'$ be the functionals exposing $(i,t)$ and
+$(i',t)$. Comparing $(i,t)$ with $(i',t)$ gives $\nu(u)<0<\nu'(u)$. Comparing $(i,t)$ with
+$(i,t')$ and $(i',t)$ with $(i',t')$ for $t'\in T\setminus\{t\}$, the first coordinate cancels,
+so both $\nu$ and $\nu'$ strictly expose $t$ in $T$ for the array $a'$. By Lemma~\ref{lem:combine}
+the combination $\nu_0$ strictly exposes $t$ in $T$ and vanishes on $W$ and on $u$, hence on
+$W':=W+\R u$. If $T\ne\emptyset$ then $u\notin W$, since $\nu$ vanishes on $W$ but not on $u$;
+so $\dim W'=\dim W+1$ and $D\le(r+2)+\dim W=r+1+\dim W'$. The induction hypothesis, applied to
+$a'$, $W'$ and $T$, gives $|F_i\cap F_{i'}|\le V(r,m)$.
+
+\smallskip\noindent\emph{Counting.} Lemma~\ref{lem:cs} with $X=[m]^{[r+1]}$, $k=m$ and
+$K=V(r,m)$ gives, for $s:=|S|$,
+\[
+  s^{2}\;\le\;m^{r+1}\bigl(s+m(m-1)V(r,m)\bigr)\;\le\;m^{r+1}s+m^{r+1}m^{2}V(r,m).
+\]
+A natural number with $s^2\le Us+B$ satisfies $s\le U+\lfloor\sqrt B\rfloor$, so
+$s\le V(r+1,m)$.
+\end{proof}
+
+The subspace $W$ is the heart of the argument: each step discards one colour, and pays for it by
+one more direction which all the relevant functionals annihilate. After $r$ steps a single colour
+is left and the admissible functionals form a line.
+
+\begin{corollary}\label{cor:vertexbound}
+Let $z\colon[n+1]\times[m]\to\R^{n+1}$ and let $V\subseteq\Grid(n+1,m)$ be convexly independent
+for $\Sigma z$. Then $|V|\le V(n,m)$.
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{lem:expose} Theorem~\ref{thm:fibre} applies with $r=n$, $D=n+1$ and $W=0$.
+\end{proof}
+
+\subsection{Density of the vertex bound}
+
+\begin{lemma}\label{lem:density}
+Let $D\ge1$ and $m:=2^{2^{D}+2}$. For every $r<D$,
+\[
+  \bigl(V(r,m)+m^{r}\bigr)\cdot2^{2^{D-r}}\;\le\;m^{r+1}.
+\]
+In particular, for $D=n+1$ and $r=n$, $\ 4\,V(n,m)\le m^{n+1}$.
+\end{lemma}
+
+\begin{proof}
+For $r=0$ this reads $3\cdot2^{2^D}\le2^{2^D+2}$. For the induction step let $r+1<D$, and put
+$p:=m^{r}$, $M:=V(r,m)$ and $T:=2^{2^{D-r-1}}$, so that $T\ge4$ and $T^{2}=2^{2^{D-r}}$. The
+induction hypothesis is $(M+p)T^{2}\le pm$, and the claim is
+\[
+  \bigl(2pm+\lfloor\sqrt{p\,m^{3}M}\rfloor\bigr)\,T\;\le\;pm^{2},
+\]
+since $V(r+1,m)+m^{r+1}=2pm+\lfloor\sqrt{pm^{3}M}\rfloor$. The hypothesis gives $T^{2}\le m$,
+hence $2T\le m$, and $MT^{2}\le p(m-T^{2})$. It therefore suffices that
+\[
+  p\,m^{3}M\,T^{2}\;\le\;p^{2}m^{3}(m-T^{2})\;\le\;p^{2}m^{2}(m-2T)^{2},
+\]
+and the second inequality is $m(m-T^2)\le(m-2T)^2$, i.e.\ $mT(T-4)+4T^{2}\ge0$.
+\end{proof}
+
+\subsection{Counting small subsets}
+
+\begin{lemma}\label{lem:smallcount}
+Let $X$ be a finite set with $M$ elements, let $K\le M$, and let $\mathcal{G}_K$ be the family of
+subsets of $X$ with at most $K$ elements. If $4K\le M$, then
+\[
+  |\mathcal{G}_K|^{4}\cdot2^{3M}\;\le\;3^{4M}.
+\]
+\end{lemma}
+
+\begin{proof}
+Give each $V\subseteq X$ the weight $2^{M-|V|}$. Then $\sum_{V\subseteq X}2^{M-|V|}=3^{M}$, and
+every $V\in\mathcal{G}_K$ has weight at least $2^{M-K}$, so $|\mathcal{G}_K|\cdot2^{M-K}\le3^{M}$.
+Since $3M\le4(M-K)$, raising to the fourth power gives the claim.
+\end{proof}
+
+As in the classical estimate $\sum_{j\le M/4}\binom Mj\le2^{H(1/4)M}$, but with a single weighted
+binomial identity and no logarithms.
+
+\section{Assembling the bound}\label{sec:numerics}
+
+Fix $n\ge2$ and set
+\[
+  D:=n+1,\qquad L:=2^{D}+2,\qquad m:=2^{L},\qquad M:=m^{D}.
+\]
+By Lemma~\ref{lem:hull}, Corollary~\ref{cor:vertexbound} and Lemma~\ref{lem:density}, every convex
+label has a code $(q,V)$ with $|V|\le K:=V(n,m)$ and $4K\le M$. So
+$\mathcal{G}=\mathcal{G}_K$ is admissible in Corollary~\ref{cor:product}.
+
+\begin{lemma}[Sign budget]\label{lem:budget}
+$20\cdot4L(D+1)^{4}m<M$.
+\end{lemma}
+
+\begin{proof}
+Dividing by $m$, we must show $80\,L\,(n+2)^{4}<2^{Ln}$. Since $n\ge2$ we have $n+2\le2^{n}$ and
+$L=2^{n+1}+2\le2^{n+2}$, so
+\[
+  80\,L\,(n+2)^{4}\;<\;2^{7}\cdot2^{n+2}\cdot2^{4n}\;=\;2^{5n+9}\;\le\;2^{Ln},
+\]
+where the last step is $5n+9\le(2^{n+1}+2)n$, true because $2^{n+1}\ge8$.
+\end{proof}
+
+\begin{proposition}[Sign factor]\label{prop:signfactor}
+$\bigl|\Sigma(D,m)\bigr|^{20}<2^{M}$.
+\end{proposition}
+
+\begin{proof}
+$L\ge10$, so Corollary~\ref{cor:signpow} applies; conclude by Lemma~\ref{lem:budget}.
+\end{proof}
+
+\begin{theorem}\label{thm:labelcount}
+For $n\ge2$ and $m=2^{2^{n+1}+2}$, $\ \bigl|\mathcal{L}(n+1,m)\bigr|<2^{m^{n+1}}$.
+\end{theorem}
+
+\begin{proof}
+Write $P:=|\Sigma(D,m)|$ and $G:=|\mathcal{G}_K|$, so that $|\mathcal{L}|\le PG$ by
+Corollary~\ref{cor:product}, $P^{20}<2^{M}$ by Proposition~\ref{prop:signfactor}, and
+$G^{4}2^{3M}\le3^{4M}$ by Lemma~\ref{lem:smallcount}. Using $3^{5}\le2^{8}$,
+\[
+  (PG)^{20}\,2^{15M}\;=\;P^{20}\bigl(G^{4}2^{3M}\bigr)^{5}
+  \;<\;2^{M}\,3^{20M}\;\le\;2^{M}\,2^{32M}\;\le\;\bigl(2^{M}\bigr)^{20}2^{15M},
+\]
+so $PG<2^{M}$.
+\end{proof}
+
+The exponent $20$ reflects the balance of the two factors: the small subsets may number up to
+$(81/8)^{M/4}\approx2^{0.83M}$, so the sign patterns must stay below $2^{M/6}$ or so.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main} for $n\ge2$]
+Theorem~\ref{thm:labelcount} and Corollary~\ref{cor:reduction} give
+$\mathrm{VC}_n(C)\le m-1=2^{2^{n+1}+2}-1=d(n)$.
+\end{proof}
+
+For $n=1$ the sign budget fails ($80\cdot6\cdot3^{4}>2^{6}$), and the next section uses
+Theorem~\ref{thm:planar} instead.
+
+\section{The planar bound}\label{sec:planar}
+
+Theorem~\ref{thm:planar} is due to Naszódi and Taschuk \cite[Theorem~3]{naszoditaschuk}, who
+prove it for positive homothets of a convex body, i.e.\ of a compact convex set with nonempty
+interior; they also construct a convex body in $\R^{3}$ whose translates shatter an infinite
+set. The statement for an arbitrary convex $C\subseteq\R^{2}$ follows by a compactness
+argument. Suppose that for every $J\subseteq[4]$ there is $y_J$ with $y_J+x_j\in C\iff j\in J$.
+The polytope $P:=\conv\{y_J+x_j:j\in J\subseteq[4]\}$ lies in $C$, so it misses the finitely many
+points $y_J+x_i$ with $i\notin J$, and some $\varepsilon>0$ is smaller than their distances to
+$P$. Then the convex body $P+\varepsilon B$, where $B$ is the closed unit disc, satisfies
+$y_J+x_j\in P+\varepsilon B\iff j\in J$, contradicting \cite[Theorem~3]{naszoditaschuk}.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main} for $n=1$]
+If $x\colon[1]\times[4]\to\R^{2}$ and $y$ witnessed $\mathrm{VC}_1(C)>3$, the four points
+$x(0,j)$ would be shattered by translates of $C$ (they are distinct, since the subsets of $[4]$
+are all realised). So $\mathrm{VC}_1(C)\le3\le63=d(1)$.
+\end{proof}
+
+\section{The bound \texorpdfstring{$\mathrm{VC}_2\le123$}{VC2 <= 123}}\label{sec:three}
+
+In $\R^{3}$ the same scheme, with sharper bookkeeping, gives Theorem~\ref{thm:three}. Slice the
+grid $[m]^{3}$ into the $m$ layers $\{i:i(0)=j\}$. Two layers share at most
+\[
+  \mu(m):=\Bigl\lfloor\tfrac12\bigl(m+\sqrt{m^{2}+8m^{2}(m-1)}\bigr)\Bigr\rfloor
+\]
+tails: if they shared three tails, the six points $b_k$, $b_k+u$ ($k<3$) would all be strictly
+exposed by functionals annihilating the layer offset $w$, which is impossible because the
+functionals annihilating two independent vectors of $\R^{3}$ form a line; a Cauchy--Schwarz count
+turns this into the bound $\mu(m)$. A second Cauchy--Schwarz count over the layers shows that a
+convexly independent set has at most
+\[
+  R(m):=\Bigl\lfloor\tfrac12\bigl(m^{2}+\sqrt{m^{4}+4m^{3}(m-1)\mu(m)}\bigr)\Bigr\rfloor
+\]
+elements. At $m=124$ one has $\mu(124)=2007$ and $R(124)=693785$. With $M=124^{3}=1906624$, the
+weighted binomial count with weights $4$ and $7$ bounds the small subsets by
+$11^{M}/(4^{R}\,7^{M-R})$, Theorem~\ref{thm:minorsigns} bounds the sign patterns by
+$(128e\cdot124^{12}/372)^{1116}<(192\cdot124^{12}+2)^{1118}$, and the inequality
+\[
+  (192\cdot124^{12}+2)^{1118}\cdot11^{1906624}\;<\;2^{1906624}\cdot4^{693785}\cdot7^{1906624-693785},
+\]
+between two numbers of about $3.6$ million bits, is checked by exact integer arithmetic. Hence
+$|\mathcal{L}(3,124)|<2^{124^{3}}$ and $\mathrm{VC}_2(C)\le123$.
+
+\section{A convex set in \texorpdfstring{$\R^{n+2}$}{R\^{}(n+2)} of infinite
+\texorpdfstring{$\mathrm{VC}_n$}{VCn} dimension}\label{sec:infinite}
+
+Write points of $\R^{n+2}$ as $(u,h)$ with $u\in\R^{n+1}$ and $h\in\R$, and lift $u$ to the point
+$\hat u:=(u,|u|^{2})$ of the paraboloid $h=|u|^{2}$.
+
+\begin{lemma}\label{lem:paraboloid}
+Let $T\subseteq\R^{n+1}$ be any set and $q\in\R^{n+1}$. If $\hat q\in\conv\{\hat u:u\in T\}$, then
+$q\in T$.
+\end{lemma}
+
+\begin{proof}
+Consider the affine function $\psi(u,h):=h-2\langle q,u\rangle+|q|^{2}$, which vanishes on the
+tangent hyperplane of the paraboloid at $\hat q$. Then $\psi(\hat u)=|u-q|^{2}$, so if
+$q\notin T$ then $\psi>0$ on every $\hat u$ with $u\in T$, hence on their convex hull, whereas
+$\psi(\hat q)=0$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:infinite}]
+The pairs $(d,S)$ with $d\in\N$ and $S\subseteq[d+1]^{[n]}$ form a countable set; fix an
+injection $(d,S)\mapsto\alpha_{d,S}$ of it into $\R$. For such a pair and $i\in[d+1]^{[n]}$ put
+$u_{d,S}(i):=(i,\alpha_{d,S})\in\R^{n}\times\R=\R^{n+1}$, and let
+\[
+  C:=\conv\bigl\{\widehat{u_{d,S}(i)} : d\in\N,\ S\subseteq[d+1]^{[n]},\ i\in S\bigr\}.
+\]
+Fix $d$. For $k<n$ and $j\in[d+1]$, and for $S\subseteq[d+1]^{[n]}$, put
+\[
+  x(k,j):=\bigl(j e_k,\,0,\,j^{2}\bigr),
+  \qquad
+  y(S):=\bigl(0,\,\alpha_{d,S},\,\alpha_{d,S}^{2}\bigr)
+\]
+in $\R^{n}\times\R\times\R$. Then $y(S)+\sum_{k<n}x\bigl(k,i(k)\bigr)=\widehat{u_{d,S}(i)}$. This
+point lies in $C$ if $i\in S$. Conversely, if it lies in $C$, then Lemma~\ref{lem:paraboloid}
+gives $u_{d,S}(i)=u_{d',S'}(i')$ for some $d'$, $S'$ and $i'\in S'$; comparing last coordinates
+gives $(d',S')=(d,S)$ by injectivity of $\alpha$, and then $i'=i$, so $i\in S$. Thus $x$ and $y$
+witness $\mathrm{VC}_n(C)>d$.
+\end{proof}
+
+For $n=1$ the set $C$ is an unbounded convex set in $\R^{3}$ whose translates have infinite VC
+dimension. Unlike the example of \cite{naszoditaschuk}, it is not a convex body, but it realises
+the shattering of every finite grid with the same set.
+
+\section{Scope and questions}\label{sec:status}
+
+\subsection{What is not proved}
+
+The case $n=1$ of statement (ii) is Theorem~\ref{thm:planar}, due to Naszódi and Taschuk
+\cite{naszoditaschuk}. For $n\ge2$, neither (i) nor
+(ii) follows from the results here:
+\[
+  \mathrm{VC}_2(C)\le2\ \text{ for convex } C\subseteq\R^{3},
+  \qquad
+  \mathrm{VC}_n(C)\le3\ \text{ for convex } C\subseteq\R^{n+1}\ (n\ge2).
+\]
+The bound $123$ for $n=2$, and the bound $d(n)=2^{2^{n+1}+2}-1$ in general, are far from the
+conjectured values. The counting method cannot reach a constant: the grid must have side length
+large enough that the number $2^{m^{n+1}}$ of subsets beats the sign patterns, and the side
+length $m$ itself is the bound obtained. A proof of (i) or (ii) would presumably have to exploit
+convexity directly on the shattered configuration, as the proof of Theorem~\ref{thm:planar}
+does in the plane.
+
+\subsection{Minkowski sums}
+
+Theorem~\ref{thm:fibre} bounds the number of vertices of a Minkowski sum $P_0+\dots+P_r$ of
+point sets $P_k\subseteq\R^{D}$ with $m$ points each by $V(r,m)$, when $D\le r+1$. In this regime
+it is a quantitative, elementary relative of the theorem of Sanyal \cite{sanyal} that
+$|\vertt(P_1+\cdots+P_r)|<\prod_k|\vertt(P_k)|$ for $r\ge D$, whose proof uses Gale duality and
+a topological non-embedding theorem.
+
+\begin{question}
+The vertex bound satisfies $V(n,m)=\Theta(m^{n+1-2^{-n}})$ as $m\to\infty$, so convexly
+independent sets have density $O(m^{-2^{-n}})$, and this density loss is what forces
+$d(n)$ to be doubly exponential. What is the true maximal size of a convexly independent set of
+indices of an additive array $[n+1]\times[m]\to\R^{n+1}$? A density of $m^{-c}$ with $c$
+independent of $n$ would give a singly exponential bound.
+\end{question}
+
+\begin{question}
+Can the convexity arguments behind Theorem~\ref{thm:planar} be extended to $\R^{3}$, to prove
+$\mathrm{VC}_2(C)\le2$ or at least a small constant bound?
+\end{question}
+
+\section{Formalisation}\label{sec:formal}
+
+All the results of this paper are formalised in Lean~4.
+
+\subsection{The development}
+
+The development \cite{repo} is a single Lean~4 project on Lean \lean{v4.33.1} and Mathlib. Its
+entry file \lean{VCDimConvexFC.lean} restates the Formal Conjectures statements of (iii) and of
+Theorem~\ref{thm:infinite} verbatim and discharges them; the definition of $\mathrm{VC}_n$ is reproduced from \cite{formalconjectures}, and
+the VC dimension of translates (\lean{HasAddVCDimLE}) is taken from \cite{meanfourier}. The
+sources contain no \lean{sorry}, no \lean{admit}, no custom \lean{axiom}, no
+\lean{native\_decide} and no \lean{unsafe} declaration; the only large computation is the
+certificate of Section~\ref{sec:three}, checked by \lean{decide~+kernel}. The entry file reports
+\lean{\#print axioms} for the existence statement, for the bounds $3$, $123$ and $d(n)$, and for
+Theorem~\ref{thm:infinite} as
+\lean{[propext, Classical.choice, Quot.sound]}.
+
+The results of this paper correspond to the following declarations. Theorem~\ref{thm:planar} is
+stated for the VC dimension of the family of translates, in the form \lean{HasAddVCDimLE 3 C},
+which implies $\mathrm{VC}_1(C)\le3$.
+
+\begin{center}
+\small
+\begin{longtable}{@{}p{0.34\linewidth}p{0.60\linewidth}@{}}
+\toprule
+\textbf{Result here} & \textbf{Lean declaration} \\
+\midrule
+\endhead
+Theorem~\ref{thm:main} & \lean{VCDimConvex.explicit\_bound\_general} \\
+Statement (iii) & \lean{VCDimConvex.fc\_exists\_\allowbreak hasAddVCNDimAtMost\_\allowbreak n\_of\_convex\_rn\_add\_one} \\
+Theorem~\ref{thm:planar} & \lean{VCDimConvex.explicit\_bound\_one} \\
+Theorem~\ref{thm:three} & \lean{VCDimConvex.explicit\_bound\_123} \\
+Theorem~\ref{thm:infinite} & \lean{VCDimConvex.exists\_convex\_\allowbreak forall\_not\_\allowbreak hasAddVCNDimAtMost} \\
+Lemma~\ref{lem:paraboloid} & \lean{paraboloidLift\_mem\_convexHull} \\
+Proposition~\ref{prop:shatter} & \lean{realizes\_of\_shattering} \\
+Corollary~\ref{cor:reduction} & \lean{hasAddVCNDimAtMost\_of\_label\_count\_side} \\
+Lemma~\ref{lem:hull} & \lean{exists\_label\_generators} \\
+Theorem~\ref{thm:minorhull} & \lean{mem\_indexedHull\_iff\_of\_sameMinorSigns} \\
+Corollary~\ref{cor:product} & \lean{card\_convexLabels\_le\_signs\_mul\_generators} \\
+Theorem~\ref{thm:minorsigns} (weaker form) & \lean{card\_minorSignPatterns\_le\_direct} \\
+Corollary~\ref{cor:signpow} & \lean{card\_minorSignPatterns\_le\_two\_pow\_direct} \\
+Lemma~\ref{lem:expose} & \lean{exists\_exposing\_of\_convexIndependentOn} \\
+Lemma~\ref{lem:combine} & \lean{exists\_combination\_annihilating} \\
+Lemma~\ref{lem:twopoints} & \lean{card\_le\_two\_of\_exposed\_annihilating} \\
+Lemma~\ref{lem:cs} & \lean{sum\_card\_sq\_le\_of\_card\_inter\_le} \\
+Theorem~\ref{thm:fibre} & \lean{card\_le\_vertexBound\_of\_exposed\_annihilating} \\
+Corollary~\ref{cor:vertexbound} & \lean{card\_le\_vertexBound\_of\_convexIndependentOn} \\
+Lemma~\ref{lem:density} & \lean{vertexBound\_density}, \lean{four\_mul\_vertexBound\_le} \\
+Lemma~\ref{lem:smallcount} & \lean{card\_filter\_card\_le\_mul\_weight\_le},
+  \lean{card\_vertexSubsets\_pow\_le} \\
+Lemma~\ref{lem:budget} & \lean{sign\_budget} \\
+Theorem~\ref{thm:labelcount} & \lean{card\_convexLabels\_lt\_general} \\
+Section~\ref{sec:three} & \lean{card\_le\_R\_of\_convexIndependentOn}, \lean{certificate\_124} \\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\subsection{Design choices}
+
+Several arguments were chosen with formalisation in mind. Theorem~\ref{thm:fibre} replaces
+arguments based on Gale duality and topological non-embedding theorems by linear algebra and the
+Cauchy--Schwarz inequality, and Theorem~\ref{thm:minorhull} avoids any general position
+assumption.
+
+Warren's theorem is not in Mathlib, and its usual proofs go through Milnor--Thom bounds or
+B\'ezout-type estimates, both heavy to formalise. The formalisation instead proves the weaker
+bound $(2kN+1)^p$ on the number of strict sign words of $N$ polynomials of degree $\le k$ in $p$
+variables (\lean{card\_strictPatterns\_le\_direct}), with no hypothesis relating $N$ and $p$.
+Given a realised sign word, maximise $P^2-\varepsilon\bigl(1+\sum_jx_j^{2kN+2}\bigr)$, where
+$P=\prod_if_i$, over a large box intersected with the closed region where the $f_i$ have the
+prescribed weak signs. For small $\varepsilon$ the maximiser is an interior point of the region
+and of the box, so an unconstrained local maximum, and the maximisers for distinct words are
+distinct. The critical equations have the pure-power form $x_j^{2kN+1}=R_j(x)$ with
+$\deg R_j\le2kN$, and a linear-algebra argument on the evaluation map shows that such a system
+has at most $(2kN+1)^p$ solutions over any field
+(\lean{card\_le\_pow\_of\_pure\_power\_relations}). The perturbation of
+Corollary~\ref{cor:ternary}, with $\varepsilon$ promoted to a new variable, gives
+$(4kN+1)^{p+1}$ ternary sign vectors (\lean{card\_ternaryPatterns\_le\_direct}), and hence the
+bound $\bigl|\Sigma(D,m)\bigr|\le\bigl(4D\,\mathcal{N}(D,m)+2\bigr)^{D^2m+2}$ in place of
+Theorem~\ref{thm:minorsigns}. This weaker bound still implies Corollary~\ref{cor:signpow}, and it is
+the one used in the certificate of Section~\ref{sec:three}.
+
+The formal proof of Theorem~\ref{thm:planar} does not go through \cite{naszoditaschuk}, and
+works with $C$ directly. Radon's lemma splits four shattered points into two parts with meeting convex hulls; a part consisting of one
+point contradicts convexity at once, and two crossing segments $[x_1,x_3]$, $[x_2,x_4]$ are
+excluded by writing $y_{\{1,3\}}+x_2$ or $y_{\{2,4\}}+x_3$ as an explicit convex combination of
+the points $y_{\{1,3\}}+x_1$, $y_{\{1,3\}}+x_3$, $y_{\{2,4\}}+x_2$, $y_{\{2,4\}}+x_4$ of $C$ (which
+of the two depends on the quadrant of $y_{\{1,3\}}-y_{\{2,4\}}$ in the basis
+$x_3-x_1$, $x_4-x_2$).
+
+\subsection{Attribution}
+
+The original formalisation, with the bound $2^{8(n+2)^n}-1$, is due to Kenta Kitamura,
+developed with the assistance of large language models, and is released under the Apache~2.0
+licence; the Formal Conjectures statement and the definition of $\mathrm{VC}_n$ are reproduced
+from \cite{formalconjectures} under the same licence. This paper describes the current state
+of the development, in which the fibre induction of Section~\ref{sec:vertices} replaces the
+original sparsity argument, and which adds formal proofs of the bounds for $n=1$
+(Theorem~\ref{thm:planar}, due to Naszódi and Taschuk \cite{naszoditaschuk}) and $n=2$
+(Section~\ref{sec:three}).
+
+\begin{thebibliography}{99}
+
+\bibitem{repo}
+K.~Kitamura,
+\emph{A Lean proof of a finite additive $\mathrm{VC}_n$ bound for convex sets},
+\url{https://github.com/KitaKen1/vcdim-convex-finite-bound}.
+
+\bibitem{formalconjectures}
+Google DeepMind,
+\emph{Formal Conjectures}, file
+\lean{FormalConjectures/Other/VCDimConvex.lean}, revision \lean{b86fdb9},
+\url{https://github.com/google-deepmind/formal-conjectures}.
+
+\bibitem{meanfourier}
+Y.~Dillies,
+\emph{mean-fourier}, files \lean{Mathlib/Combinatorics/SetFamily/VCDim.lean} and
+\lean{Mathlib/Combinatorics/Additive/VCDim.lean},
+\url{https://github.com/YaelDillies/mean-fourier}.
+
+\bibitem{naszoditaschuk}
+M.~Naszódi and S.~Taschuk,
+\emph{On the transversal number and VC-dimension of families of positive homothets of a convex
+body},
+Discrete Math.\ \textbf{310} (2010), 77--82;
+\texttt{arXiv:0907.5223}.
+
+\bibitem{afz}
+N.~Alon, J.~Fox and Y.~Zhao,
+\emph{Efficient arithmetic regularity and removal lemmas for induced bipartite patterns},
+Discrete Anal.\ (2019), Paper No.~3;
+\texttt{arXiv:1801.04675}.
+
+\bibitem{chernikovtowsner}
+A.~Chernikov and H.~Towsner,
+\emph{Hypergraph regularity and higher arity VC-dimension},
+\texttt{arXiv:2010.00726}.
+
+\bibitem{cpt}
+A.~Chernikov, D.~Palacín and K.~Takeuchi,
+\emph{On $n$-dependence},
+Notre Dame J.\ Form.\ Log.\ \textbf{60} (2019), 195--214;
+\texttt{arXiv:1411.0120}.
+
+\bibitem{gladkova}
+V.~Gladkova,
+\emph{On a conjecture of Terry and Wolf},
+\texttt{arXiv:2411.05612}.
+
+\bibitem{laskowski}
+M.~C.~Laskowski,
+\emph{Vapnik--Chervonenkis classes of definable sets},
+J.\ London Math.\ Soc.\ (2) \textbf{45} (1992), 377--384.
+
+\bibitem{sanyal}
+R.~Sanyal,
+\emph{Topological obstructions for vertex numbers of Minkowski sums},
+J.~Combin.\ Theory Ser.~A \textbf{116} (2009), 168--179;
+\texttt{arXiv:math/0702717}.
+
+\bibitem{shelah71}
+S.~Shelah,
+\emph{Stability, the f.c.p., and superstability; model theoretic properties of formulas in first
+order theory},
+Ann.\ Math.\ Logic \textbf{3} (1971), 271--362.
+
+\bibitem{shelahstrongly}
+S.~Shelah,
+\emph{Strongly dependent theories},
+Israel J.\ Math.\ \textbf{204} (2014), 1--83;
+\texttt{arXiv:math/0504197}.
+
+\bibitem{shelah2dep}
+S.~Shelah,
+\emph{Definable groups for dependent and $2$-dependent theories},
+Sarajevo J.\ Math.\ \textbf{13} (2017), 3--25;
+\texttt{arXiv:math/0703045}.
+
+\bibitem{sisask}
+O.~Sisask,
+\emph{Convolutions of sets with bounded VC-dimension are uniformly continuous},
+Discrete Anal.\ (2021), Paper No.~1;
+\texttt{arXiv:1802.02836}.
+
+\bibitem{terrywolf}
+C.~Terry and J.~Wolf,
+\emph{Higher-order generalizations of stability and arithmetic regularity},
+\texttt{arXiv:2111.01739}.
+
+\bibitem{terrywolfvc2}
+C.~Terry and J.~Wolf,
+\emph{The structure of subsets of $\mathbb{F}_p^n$ of bounded $\mathrm{VC}_2$-dimension},
+\texttt{arXiv:2510.12867}.
+
+\bibitem{vc}
+V.~N.~Vapnik and A.~Ya.~Chervonenkis,
+\emph{On the uniform convergence of relative frequencies of events to their probabilities},
+Theory Probab.\ Appl.\ \textbf{16} (1971), 264--280.
+
+\bibitem{warren}
+H.~E.~Warren,
+\emph{Lower bounds for approximation by nonlinear manifolds},
+Trans.\ Amer.\ Math.\ Soc.\ \textbf{133} (1968), 167--178.
+
+\end{thebibliography}
+
+\end{document}
