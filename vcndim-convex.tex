@@ -23,13 +23,14 @@
 \DeclareMathOperator{\sgn}{sgn}
 \DeclareMathOperator{\vertt}{vert}
 \DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\VCn}{\mathrm{VC}_n}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Ftwo}{\mathbb{F}_2}
 \newcommand{\Grid}{\mathcal{G}}
 \newcommand{\lean}[1]{\texttt{\footnotesize #1}}
 
-\title{$\mathrm{VC}_n$ dimension of convex sets in $\R^{n + 1}$}
+\title{$\VCn$ dimension of convex sets in $\R^m$}
 
 \author{LLMs prompted by Yaël Dillies}
 \date{\today}
@@ -61,9 +62,9 @@ dimension $n+1$ is sharp: some convex set in $\R^{n+2}$ has infinite $\mathrm{VC
 Let $G$ be an abelian group and $A\subseteq G$. Fix $n,d\in\N$ and write
 $[m]:=\{0,\dots,m-1\}$.
 
-\begin{definition}[Additive $\mathrm{VC}_n$ dimension]\label{def:vcn}
-A set $A\subseteq G$ \emph{has additive $\mathrm{VC}_n$ dimension at most $d$}, written
-$\mathrm{VC}_n(A)\le d$, if there is \emph{no} pair
+\begin{definition}[$\VCn$ dimension]\label{def:vcn}
+A set $A\subseteq G$ \emph{has $\VCn$ dimension at most $d$}, written
+$\VCn(A)\le d$, if there is \emph{no} pair
 \[
   x\colon [n]\times[d+1]\to G,
   \qquad
@@ -78,12 +79,12 @@ such that
 \end{equation}
 \end{definition}
 
-In words: $\mathrm{VC}_n(A)>d$ exactly when there is an $n$-dimensional grid of
+In words: $\VCn(A)>d$ exactly when there is an $n$-dimensional grid of
 ``directions'' $x$ of side length $d+1$ whose $(d+1)^n$ sums can be translated so as to
 realise \emph{every} subset of the grid inside $A$. For $n=1$ this is the ordinary VC
 dimension of the family of translates of $A$.
 
-\subsection{Origins of the \texorpdfstring{$\mathrm{VC}_n$}{VCn} dimension}
+\subsection{Origins of the \texorpdfstring{$\VCn$}{VCn} dimension}
 
 The case $n=1$ goes back to Vapnik and Chervonenkis \cite{vc}, who introduced the dimension now
 named after them to prove uniform laws of large numbers. At the same time, and independently,
@@ -95,15 +96,15 @@ The higher-arity notion also comes from model theory. Shelah \cite{shelahstrongl
 introduced \emph{$n$-dependent} theories, in which no formula $\varphi(x_1,\dots,x_n;y)$ can
 encode a random $(n+1)$-partite $(n+1)$-uniform hypergraph. Chernikov, Palacín and Takeuchi
 \cite{cpt} developed the combinatorics of this notion. In their terms, an $(n+1)$-ary relation
-$R\subseteq X_1\times\dots\times X_n\times Y$ has $\mathrm{VC}_n$ dimension at least $d+1$ if there
+$R\subseteq X_1\times\dots\times X_n\times Y$ has $\VCn$ dimension at least $d+1$ if there
 are $a_{k,j}\in X_k$ ($k<n$, $j\le d$) and $b_S\in Y$ ($S\subseteq[d+1]^{n}$) with
 $R(a_{0,i(0)},\dots,a_{n-1,i(n-1)};b_S)$ if and only if $i\in S$. They showed that a formula is
-$n$-dependent exactly when it has finite $\mathrm{VC}_n$ dimension, and proved a generalisation of
+$n$-dependent exactly when it has finite $\VCn$ dimension, and proved a generalisation of
 the Sauer--Shelah lemma for it. Chernikov and Towsner \cite{chernikovtowsner} then showed that
-hypergraphs of bounded $\mathrm{VC}_n$ dimension admit hypergraph regularity decompositions that
+hypergraphs of bounded $\VCn$ dimension admit hypergraph regularity decompositions that
 use only the first $n$ levels.
 
-Definition~\ref{def:vcn} is the additive specialisation, to the relation $y+x_1+\dots+x_n\in A$
+Definition~\ref{def:vcn} is the specialisation to the relation $y+x_1+\dots+x_n\in A$
 on an abelian group. For $n=1$, sets of bounded VC dimension in abelian groups have strong
 arithmetic regularity properties, studied by Alon, Fox and Zhao \cite{afz} and by Sisask
 \cite{sisask}. For $n=2$, Terry and Wolf \cite{terrywolf,terrywolfvc2} proved that subsets of
@@ -111,12 +112,12 @@ $\mathbb{F}_p^{m}$ of bounded $\mathrm{VC}_2$ dimension are well approximated by
 of a bounded-complexity quadratic factor. Gladkova \cite{gladkova} confirmed their conjecture that
 the ``quadratic Green--Sanders example'' in $\mathbb{F}_p^{m}$ has $\mathrm{VC}_2$ dimension at
 least $3$ (and at most $501$). Convex sets are a natural Euclidean test case: in $\R^{n+1}$ the
-$\mathrm{VC}_n$ dimension is finite (Theorem~\ref{thm:main}), and in $\R^{n+2}$ it need not be
+$\VCn$ dimension is finite (Theorem~\ref{thm:main}), and in $\R^{n+2}$ it need not be
 (Theorem~\ref{thm:infinite}).
 
 \begin{definition}\label{def:dstar}
 For $n\ge1$ let $d^\ast(n)$ be the least $d\in\N\cup\{\infty\}$ such that
-$\mathrm{VC}_n(C)\le d$ for every convex $C\subseteq\R^{n+1}$.
+$\VCn(C)\le d$ for every convex $C\subseteq\R^{n+1}$.
 \end{definition}
 
 \begin{question}[The problem]\label{q:main}
@@ -141,7 +142,7 @@ Let $n\ge1$ and put
 \[
   d(n)\;:=\;2^{2^{n+1}+2}-1 .
 \]
-Then every convex $C\subseteq\R^{n+1}$ satisfies $\mathrm{VC}_n(C)\le d(n)$. In
+Then every convex $C\subseteq\R^{n+1}$ satisfies $\VCn(C)\le d(n)$. In
 particular $d^\ast(n)\le d(n)<\infty$, which answers Question~\ref{q:main}(a).
 \end{theorem}
 
@@ -161,8 +162,8 @@ example of Naszódi and Taschuk \cite[Example~4]{naszoditaschuk} of a convex bod
 whose translates have infinite VC dimension, and the following theorem extends it to all $n$.
 
 \begin{theorem}\label{thm:infinite}
-For every $n\ge0$ there is a convex set $C\subseteq\R^{n+2}$ with $\mathrm{VC}_n(C)=\infty$, i.e.\
-$\mathrm{VC}_n(C)\le d$ fails for every $d$.
+For every $n\ge0$ there is a convex set $C\subseteq\R^{n+2}$ with $\VCn(C)=\infty$, i.e.\
+$\VCn(C)\le d$ fails for every $d$.
 \end{theorem}
 
 For $n\ge2$ Questions~\ref{q:main}(b) and (c) remain open: the bound $d(n)$ is doubly
@@ -250,7 +251,7 @@ occur, \emph{with $C$ held fixed}. Consequently:
 
 \begin{corollary}\label{cor:reduction}
 Let $n\ge1$ and $m\ge1$. If $|\mathcal{L}(n+1,m)|<2^{m^{n+1}}$, then every convex
-$C\subseteq\R^{n+1}$ satisfies $\mathrm{VC}_n(C)\le m-1$.
+$C\subseteq\R^{n+1}$ satisfies $\VCn(C)\le m-1$.
 \end{corollary}
 
 \begin{proof}
@@ -652,7 +653,7 @@ $(81/8)^{M/4}\approx2^{0.83M}$, so the sign patterns must stay below $2^{M/6}$ o
 
 \begin{proof}[Proof of Theorem~\ref{thm:main} for $n\ge2$]
 Theorem~\ref{thm:labelcount} and Corollary~\ref{cor:reduction} give
-$\mathrm{VC}_n(C)\le m-1=2^{2^{n+1}+2}-1=d(n)$.
+$\VCn(C)\le m-1=2^{2^{n+1}+2}-1=d(n)$.
 \end{proof}
 
 For $n=1$ the sign budget fails ($80\cdot6\cdot3^{4}>2^{6}$), and the next section uses
@@ -702,7 +703,7 @@ between two numbers of about $3.6$ million bits, is checked by exact integer ari
 $|\mathcal{L}(3,124)|<2^{124^{3}}$ and $\mathrm{VC}_2(C)\le123$.
 
 \section{A convex set in \texorpdfstring{$\R^{n+2}$}{R\^{}(n+2)} of infinite
-\texorpdfstring{$\mathrm{VC}_n$}{VCn} dimension}\label{sec:infinite}
+\texorpdfstring{$\VCn$}{VCn} dimension}\label{sec:infinite}
 
 Write points of $\R^{n+2}$ as $(u,h)$ with $u\in\R^{n+1}$ and $h\in\R$, and lift $u$ to the point
 $\hat u:=(u,|u|^{2})$ of the paraboloid $h=|u|^{2}$.
@@ -736,7 +737,7 @@ in $\R^{n}\times\R\times\R$. Then $y(S)+\sum_{k<n}x\bigl(k,i(k)\bigr)=\widehat{u
 point lies in $C$ if $i\in S$. Conversely, if it lies in $C$, then Lemma~\ref{lem:paraboloid}
 gives $u_{d,S}(i)=u_{d',S'}(i')$ for some $d'$, $S'$ and $i'\in S'$; comparing last coordinates
 gives $(d',S')=(d,S)$ by injectivity of $\alpha$, and then $i'=i$, so $i\in S$. Thus $x$ and $y$
-witness $\mathrm{VC}_n(C)>d$.
+witness $\VCn(C)>d$.
 \end{proof}
 
 For $n=1$ the set $C$ is an unbounded convex set in $\R^{3}$ whose translates have infinite VC
@@ -752,7 +753,7 @@ Taschuk \cite{naszoditaschuk}. For $n\ge2$, neither (b) nor (c) follows from the
 \[
   \mathrm{VC}_2(C)\le2\ \text{ for convex } C\subseteq\R^{3},
   \qquad
-  \mathrm{VC}_n(C)\le3\ \text{ for convex } C\subseteq\R^{n+1}\ (n\ge2).
+  \VCn(C)\le3\ \text{ for convex } C\subseteq\R^{n+1}\ (n\ge2).
 \]
 The bound $123$ for $n=2$, and the bound $d(n)=2^{2^{n+1}+2}-1$ in general, are far from the
 conjectured values. The counting method cannot reach a constant: the grid must have side length
@@ -790,7 +791,7 @@ All the results of this paper are formalised in Lean~4.
 
 The development \cite{repo} is a single Lean~4 project on Lean \lean{v4.33.1} and Mathlib. Its
 entry file \lean{VCDimConvexFC.lean} states the finiteness result and
-Theorem~\ref{thm:infinite} in terms of an explicit Lean definition of $\mathrm{VC}_n$, and
+Theorem~\ref{thm:infinite} in terms of an explicit Lean definition of $\VCn$, and
 the VC dimension of translates (\lean{HasAddVCDimLE}) is taken from \cite{meanfourier}. The
 sources contain no \lean{sorry}, no \lean{admit}, no custom \lean{axiom}, no
 \lean{native\_decide} and no \lean{unsafe} declaration; the only large computation is the
@@ -886,7 +887,7 @@ original sparsity argument, and which adds formal proofs of the bounds for $n=1$
 
 \bibitem{repo}
 K.~Kitamura,
-\emph{A Lean proof of a finite additive $\mathrm{VC}_n$ bound for convex sets},
+\emph{A Lean proof of a finite additive $\VCn$ bound for convex sets},
 \url{https://github.com/KitaKen1/vcdim-convex-finite-bound}.
 
 \bibitem{meanfourier}
