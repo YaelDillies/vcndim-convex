@@ -159,6 +159,17 @@ The dimension $n+1$ in Theorem~\ref{thm:main} cannot be increased. For $n=1$ thi
 example of Naszódi and Taschuk \cite[Example~4]{naszoditaschuk} of a convex body in $\R^{3}$
 whose translates have infinite VC dimension, and the following theorem extends it to all $n$.
 
+In one dimension lower the answer is a small constant, with a short proof by the same method.
+
+\begin{theorem}\label{thm:below}
+Let $n\ge1$. Every convex $C\subseteq\R^{n}$ satisfies $\VCn(C)\le2$. This is sharp for
+$n=1$, where translates of an interval of length $1$ shatter two points.
+\end{theorem}
+
+Before this theorem the only bound available for convex sets in $\R^n$ was the one deduced from
+Theorem~\ref{thm:main} by passing to the convex set $C\times\R\subseteq\R^{n+1}$, namely
+$d(n)$.
+
 \begin{theorem}\label{thm:infinite}
 For every $n\ge0$ there is a convex set $C\subseteq\R^{n+2}$ with $\VCn(C)=\infty$, i.e.\
 $\VCn(C)\le d$ fails for every $d$.
@@ -204,7 +215,7 @@ and a convexly independent set of indices has at most $K=V(n,m)$ elements, which
 quarter of the grid at our choice of $m$ (Section~\ref{sec:vertices}). Section~\ref{sec:numerics}
 carries out the arithmetic. For $n=1$ this arithmetic fails, and Section~\ref{sec:planar}
 deduces the case $n=1$ from Theorem~\ref{thm:planar} instead. Section~\ref{sec:three} sketches
-Theorem~\ref{thm:three}, and Section~\ref{sec:infinite} proves Theorem~\ref{thm:infinite}.
+Theorem~\ref{thm:three}, Section~\ref{sec:below} proves Theorem~\ref{thm:below}, and Section~\ref{sec:infinite} proves Theorem~\ref{thm:infinite}.
 Section~\ref{sec:status} discusses the gap to the conjectured bounds,
 and Section~\ref{sec:formal} describes a formalisation of all the results in Lean~4.
 
@@ -700,6 +711,45 @@ $(128e\cdot124^{12}/372)^{1116}<(192\cdot124^{12}+2)^{1118}$, and the inequality
 between two numbers of about $3.6$ million bits, is checked by exact integer arithmetic. Hence
 $|\mathcal{L}(3,124)|<2^{124^{3}}$ and $\mathrm{VC}_2(C)\le123$.
 
+\section{Convex sets in \texorpdfstring{$\R^{n}$}{R\^{}n}}\label{sec:below}
+
+The fibre induction of Section~\ref{sec:vertices} gives a much stronger conclusion if the whole
+grid is considered, because two fibres of the full grid share \emph{all} their tails and no
+counting is needed.
+
+\begin{proposition}\label{prop:full}
+Let $c\ge1$, let $a\colon[c]\times[3]\to\R^D$, and let $W\le\R^D$ be a subspace
+with $D\le c+\dim W$. Then it is not the case that every index $x\in[3]^{[c]}$ is strictly exposed
+in $[3]^{[c]}$, for the array $a$, by a functional vanishing on $W$.
+\end{proposition}
+
+\begin{proof}
+Induct on $c$. For $c=1$, $W$ has codimension at most $1$ and Lemma~\ref{lem:twopoints} applies to
+the three indices.
+
+For $c+1$ colours, put $u:=a(0,1)-a(0,0)$ and $a'$ for $a$ without its first colour. Suppose every
+$x$ is strictly exposed. For each $t\in[3]^{[c]}$ let $\nu$ and $\nu'$ expose $(0,t)$ and $(1,t)$.
+Exactly as in the proof of Theorem~\ref{thm:fibre}, $\nu(u)<0<\nu'(u)$, and both $\nu$ and $\nu'$
+strictly expose $t$ in $[3]^{[c]}$ for $a'$, now \emph{for every} $t$, since the fibres over $0$ and
+$1$ are the entire grid. By Lemma~\ref{lem:combine} the combination $\nu_0$ strictly exposes $t$
+for $a'$ and vanishes on $W':=W+\R u$. Since $\nu(u)\neq0$ while $\nu$ vanishes on $W$, we have
+$u\notin W$, so $\dim W'=\dim W+1$ and $D\le c+\dim W'$. The induction hypothesis for $a'$ and $W'$
+is contradicted.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:below}]
+Suppose $x$ and $y$ witness $\VCn(C)>2$, and let $q(i):=\sum_kx(k,i(k))$ for
+$i\in[3]^{[n]}$. By Lemma~\ref{lem:expose} and Proposition~\ref{prop:full} with $c=D=n$ and $W=0$,
+the points $q(i)$ are not convexly independent: some $q(i_0)$ lies in the convex hull of the
+others. Take $S:=[3]^{[n]}\setminus\{i_0\}$. The translate $y(S)+q(j)$ lies in $C$ for every
+$j\in S$, hence so does $y(S)+q(i_0)$, by convexity of $C$. But $i_0\notin S$, contradicting
+\eqref{eq:shatter}.
+\end{proof}
+
+For $n=1$ this is the observation that of three points on a line, translates of an interval cannot
+separate the middle one from the outer two. Sharpness for $n=1$ is shown by translates of
+$[0,1]$ shattering $\{0,1\}$. Whether the bound $2$ is sharp for $n\ge2$ we do not know.
+
 \section{A convex set in \texorpdfstring{$\R^{n+2}$}{R\^{}(n+2)} of infinite
 \texorpdfstring{$\VCn$}{VCn} dimension}\label{sec:infinite}
 
@@ -813,6 +863,8 @@ Theorem~\ref{thm:main} & \lean{VCDimConvex.explicit\_bound\_general} \\
 Question~\ref{q:main}(a) & \lean{VCDimConvex.fc\_exists\_\allowbreak hasAddVCNDimAtMost\_\allowbreak n\_of\_convex\_rn\_add\_one} \\
 Theorem~\ref{thm:planar} & \lean{VCDimConvex.explicit\_bound\_one} \\
 Theorem~\ref{thm:three} & \lean{VCDimConvex.explicit\_bound\_123} \\
+Theorem~\ref{thm:below} & \lean{VCDimConvex.hasAddVCNDimAtMost\_\allowbreak two\_of\_convex} \\
+Proposition~\ref{prop:full} & \lean{not\_forall\_exposed\_full} \\
 Theorem~\ref{thm:infinite} & \lean{VCDimConvex.exists\_convex\_\allowbreak forall\_not\_\allowbreak hasAddVCNDimAtMost} \\
 Lemma~\ref{lem:paraboloid} & \lean{paraboloidLift\_mem\_convexHull} \\
 Proposition~\ref{prop:shatter} & \lean{realizes\_of\_shattering} \\
