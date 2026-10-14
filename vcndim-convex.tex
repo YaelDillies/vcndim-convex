@@ -39,18 +39,16 @@
 \maketitle
 
 \begin{abstract}
-For a subset $A$ of an abelian group $G$, the \emph{additive $\mathrm{VC}_n$
-dimension} of $A$ measures how large an $n$-dimensional additive grid $A$ can shatter
-by translations. We study the problem of determining the optimal bound $d^\ast(n)$ on the additive
-$\mathrm{VC}_n$ dimension of a convex set $C\subseteq\R^{n+1}$. It is not even known whether
-$d^\ast(n)\le3$ for all $n$, or whether $d^\ast(2)\le2$; the qualitative question whether
-$d^\ast(n)$ is finite was open. We prove that it is, with the explicit bound $d(n) = 2^{2^{n+1}+2}-1$. The proof is a polynomial-method argument
-with two halves: Warren's bound on the number of sign patterns of the minors of an additive
-grid, and a bound on convexly independent subsets of an additive grid, proved by induction on the
-number of colours while keeping track of a subspace which all exposing functionals annihilate. For $n=1$ we instead use the theorem of
-Naszódi and Taschuk that translates of a planar convex set have $\mathrm{VC}$ dimension at most
-$3$, and for $n=2$ a numerical refinement gives the bound $123$. Finally, we show that the
-dimension $n+1$ is sharp: some convex set in $\R^{n+2}$ has infinite $\mathrm{VC}_n$ dimension.
+For a subset $A$ of an abelian group $G$, the \emph{$\VCn$ dimension} of $A$
+is the maximal natural number $d$ such that there exist finite families $X_1, \dots, X_n$
+of $d$ elements such that $A$ shatters $X_1 + \dots + X_n$.
+We study the maximum $\VCn$ dimension of a convex set $C \subseteq \R^m$.
+For $m = n$, we prove an upper bound of $2$, which is tight.
+For $m = n + 2$, we construct a convex set $C$ of infinite $\VCn$ dimension,
+generalising the construction of Naszódi and Taschuk \cite[Example~4]{naszoditaschuk}.
+For $m = n + 1$, we prove an upper bound of $2^{2^{n + 1} + 2} - 1$ by reducing to bounding
+the number of sign patterns of the minors of an additive grid following Warren \cite{warren},
+and separately bounding the number of convex-independent subsets of an additive grid.
 \end{abstract}
 
 \tableofcontents
