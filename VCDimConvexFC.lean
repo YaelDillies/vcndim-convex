@@ -1,5 +1,6 @@
 import VCDimConvex.BoundGeneral
 import VCDimConvex.FCStatement
+import VCDimConvex.InfiniteDim
 
 /-!
 # A finite additive VC_n bound for convex sets
@@ -9,7 +10,8 @@ and conclusion of the Formal Conjectures target
 `VCDimConvex.exists_hasAddVCNDimAtMost_n_of_convex_rn_add_one` and
 discharges it using the explicit bound `2^(2^(n+1)+2) - 1` from `VCDimConvex.BoundGeneral`. It also
 records the much smaller witnesses `3` for `n = 1` (`VCDimConvex.BoundOne`) and `123` for `n = 2`
-(`VCDimConvex.Bound123`).
+(`VCDimConvex.Bound123`), and a convex set in `ℝⁿ⁺²` of infinite VCₙ dimension
+(`VCDimConvex.InfiniteDim`).
 -/
 
 namespace VCDimConvexFC
@@ -34,9 +36,9 @@ theorem vcdim_convex_le_general (n : ℕ) (hn : n ≠ 0) :
     ∀ C : Set (Fin (n + 1) → ℝ), Convex ℝ C → HasAddVCNDimAtMost C n (2 ^ (2 ^ (n + 1) + 2) - 1) :=
   VCDimConvex.explicit_bound_general n hn
 
-#print axioms vcdim_convex_uniform_bound_solved
-#print axioms vcdim_convex_one_le_three
-#print axioms vcdim_convex_two_le_123
-#print axioms vcdim_convex_le_general
+/-- There exists a convex set in `ℝⁿ⁺²` of infinite `VCₙ` dimension. -/
+theorem exists_convex_rn_add_two_forall_not_hasAddVCNDimAtMost (n : ℕ) :
+    ∃ C : Set (Fin (n + 2) → ℝ), Convex ℝ C ∧ ∀ d, ¬ HasAddVCNDimAtMost C n d :=
+  VCDimConvex.exists_convex_forall_not_hasAddVCNDimAtMost n
 
 end VCDimConvexFC
